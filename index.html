@@ -3,8 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Buscador de Películas</title>
-<title>MOVARA</title>
+<title>Movara</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -3246,6 +3245,38 @@ async function loadBrowseGrid(append = false) {
     }
     // genre, year, type modes — fetch movie+tv
     let mediaTypes = mode === 'type' ? [value] : ['movie','tv'];
+
+    // Anime mode: animation genre + anime keyword
+    if (mode === 'anime') {
+      const [rm, rt] = await Promise.all([
+        fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_KEY}&language=es-ES&with_genres=16&with_keywords=210024&sort_by=${sortBy}&page=${browsePage}`).then(r=>r.json()),
+        fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_KEY}&language=es-ES&with_genres=16&with_keywords=210024&sort_by=${sortByTv}&page=${browsePage}`).then(r=>r.json()),
+      ]);
+      let animeResults = [
+        ...(rm.results||[]).map(x=>({...x,_mt:'movie'})),
+        ...(rt.results||[]).map(x=>({...x,_mt:'tv'})),
+      ].filter(x=>x.poster_path);
+      if (browseSort === 'year') {
+        animeResults.sort((a,b)=>((b.release_date||b.first_air_date||'')).localeCompare((a.release_date||a.first_air_date||'')));
+      } else {
+        animeResults.sort((a,b)=>(b.popularity||0)-(a.popularity||0));
+      }
+      if (!append) grid.innerHTML = '';
+      renderBrowseGrid(grid, animeResults, null, 'browseShowMore2');
+      return;
+    }
+
+    // Map movie genre IDs to their TV equivalents where they differ
+    const MOVIE_TO_TV_GENRE = {
+      '28':   '10759', // Acción → Acción y aventura
+      '878':  '10765', // Sci-Fi → Sci-Fi y Fantasía
+      '14':   '10765', // Fantasía → Sci-Fi y Fantasía
+      '10752':'10768', // Bélica → Guerra y Política
+      '27':   '9648',  // Terror → Misterio (más resultados en TV)
+      '53':   '9648',  // Suspenso → Misterio
+      '12':   '10759', // Aventura → Acción y aventura
+      '10402':'10402', // Música (mismo)
+    };
     let results = [];
     for (const mt of mediaTypes) {
       // Use correct sort field per media type
@@ -3253,7 +3284,8 @@ async function loadBrowseGrid(append = false) {
       const mtSortBy = browseSort === 'year' ? dateSortField : 'popularity.desc';
       let url;
       if (mode === 'genre') {
-        url = `https://api.themoviedb.org/3/discover/${mt}?api_key=${TMDB_KEY}&language=es-ES&with_genres=${value}&sort_by=${mtSortBy}&page=${browsePage}`;
+        const genreId = (mt === 'tv' && MOVIE_TO_TV_GENRE[value]) ? MOVIE_TO_TV_GENRE[value] : value;
+        url = `https://api.themoviedb.org/3/discover/${mt}?api_key=${TMDB_KEY}&language=es-ES&with_genres=${genreId}&sort_by=${mtSortBy}&page=${browsePage}`;
       } else if (mode === 'year') {
         const yf = mt === 'movie' ? 'primary_release_year' : 'first_air_date_year';
         url = `https://api.themoviedb.org/3/discover/${mt}?api_key=${TMDB_KEY}&language=es-ES&${yf}=${value}&sort_by=${mtSortBy}&page=${browsePage}`;
@@ -3321,24 +3353,30 @@ function renderBrowseGrid(grid, items, forceType, showMoreBtnId) {
 
 function renderCategoriesGrid(grid) {
   const CATS = [
-    {id:'28',name:'Acción',emoji:'🎬',color:'#ef4444'},
-    {id:'35',name:'Comedia',emoji:'😂',color:'#f59e0b'},
-    {id:'18',name:'Drama',emoji:'🎭',color:'#8b5cf6'},
-    {id:'27',name:'Terror',emoji:'👻',color:'#1e293b'},
-    {id:'10749',name:'Romance',emoji:'❤️',color:'#ec4899'},
-    {id:'878',name:'Sci-Fi',emoji:'🚀',color:'#0ea5e9'},
-    {id:'16',name:'Animación',emoji:'✨',color:'#10b981'},
-    {id:'53',name:'Suspenso',emoji:'🔍',color:'#64748b'},
-    {id:'12',name:'Aventura',emoji:'🗺️',color:'#f97316'},
-    {id:'99',name:'Documental',emoji:'📽️',color:'#78716c'},
-    {id:'14',name:'Fantasía',emoji:'🧙',color:'#7c3aed'},
-    {id:'80',name:'Crimen',emoji:'🕵️',color:'#dc2626'},
-    {id:'10402',name:'Música',emoji:'🎵',color:'#db2777'},
-    {id:'36',name:'Historia',emoji:'📜',color:'#92400e'},
-    {id:'9648',name:'Misterio',emoji:'🔮',color:'#312e81'},
-    {id:'10751',name:'Familia',emoji:'👨‍👩‍👧',color:'#16a34a'},
-    {id:'10752',name:'Bélica',emoji:'⚔️',color:'#374151'},
-    {id:'37',name:'Western',emoji:'🤠',color:'#b45309'},
+    {id:'28',    name:'Acción',           emoji:'💥', color:'#ef4444'},
+    {id:'35',    name:'Comedia',          emoji:'😂', color:'#f59e0b'},
+    {id:'18',    name:'Drama',            emoji:'🎭', color:'#8b5cf6'},
+    {id:'27',    name:'Terror',           emoji:'👻', color:'#1e293b'},
+    {id:'10749', name:'Romance',          emoji:'❤️', color:'#ec4899'},
+    {id:'878',   name:'Sci-Fi',           emoji:'🚀', color:'#0ea5e9'},
+    {id:'53',    name:'Suspenso',         emoji:'🔍', color:'#64748b'},
+    {id:'12',    name:'Aventura',         emoji:'🗺️', color:'#f97316'},
+    {id:'99',    name:'Documental',       emoji:'📽️', color:'#78716c'},
+    {id:'14',    name:'Fantasía',         emoji:'🧙', color:'#7c3aed'},
+    {id:'80',    name:'Crimen',           emoji:'🕵️', color:'#dc2626'},
+    {id:'10402', name:'Música',           emoji:'🎵', color:'#db2777'},
+    {id:'36',    name:'Historia',         emoji:'📜', color:'#92400e'},
+    {id:'9648',  name:'Misterio',         emoji:'🔮', color:'#312e81'},
+    {id:'10751', name:'Familia',          emoji:'👨‍👩‍👧', color:'#16a34a'},
+    {id:'10752', name:'Bélica',           emoji:'⚔️', color:'#374151'},
+    {id:'37',    name:'Western',          emoji:'🤠', color:'#b45309'},
+    {id:'16',    name:'Animación',        emoji:'✨', color:'#10b981'},
+    {anime:true, name:'Anime',            emoji:'⛩️', color:'#e11d48'},
+    {id:'10759', name:'Acción y Aventura',emoji:'🦸', color:'#b91c1c'},
+    {id:'10765', name:'Sci-Fi y Fantasía',emoji:'🌌', color:'#1d4ed8'},
+    {id:'10768', name:'Guerra y Política',emoji:'🏛️', color:'#4b5563'},
+    {id:'10764', name:'Reality',          emoji:'📺', color:'#0891b2'},
+    {id:'10762', name:'Kids',             emoji:'🧸', color:'#15803d'},
   ];
   grid.className = 'cat-grid';
   grid.innerHTML = '';
@@ -3348,7 +3386,11 @@ function renderCategoriesGrid(grid) {
     card.style.background = cat.color + '33';
     card.style.borderColor = cat.color + '66';
     card.innerHTML = `<div class="cat-card-emoji">${cat.emoji}</div><div class="cat-card-name">${cat.name}</div>`;
-    card.addEventListener('click', () => browseByTag('genre', cat.id, cat.name));
+    if (cat.anime) {
+      card.addEventListener('click', () => browseByTag('anime', 'anime', 'Anime'));
+    } else {
+      card.addEventListener('click', () => browseByTag('genre', cat.id, cat.name));
+    }
     grid.appendChild(card);
   });
 }

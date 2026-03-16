@@ -1477,22 +1477,34 @@ async function searchYouTube(query) {
 }
 
 async function tmdbVideos(id, movieTitle) {
-  // 1. YouTube API: search "titulo trailer español latino"
+  const keys = [];
+
+  // 1. YouTube: trailer en español latino
   const latinoKey = await searchYouTube(`${movieTitle} trailer español latino`);
-  if (latinoKey) return latinoKey;
+  if (latinoKey) keys.push(latinoKey);
 
-  // 2. Fallback: TMDB Spanish
-  const type = currentMediaType;
-  const r = await fetch(`https://api.themoviedb.org/3/${type}/${id}/videos?api_key=${TMDB_KEY}&language=es`);
-  const d = await r.json();
-  let trailer = d.results?.find(v => v.type === 'Trailer' && v.site === 'YouTube');
-  if (trailer) return trailer.key;
+  // 2. TMDB Spanish trailers
+  try {
+    const type = currentMediaType;
+    const d = await fetch(`https://api.themoviedb.org/3/${type}/${id}/videos?api_key=${TMDB_KEY}&language=es`).then(r=>r.json());
+    (d.results||[]).filter(v=>v.site==='YouTube'&&v.type==='Trailer').forEach(v=>{ if(!keys.includes(v.key)) keys.push(v.key); });
+  } catch(e){}
 
-  // 3. Fallback: TMDB English
-  const r2 = await fetch(`https://api.themoviedb.org/3/${type}/${id}/videos?api_key=${TMDB_KEY}&language=en-US`);
-  const d2 = await r2.json();
-  trailer = d2.results?.find(v => v.type === 'Trailer' && v.site === 'YouTube');
-  return trailer?.key || null;
+  // 3. YouTube: trailer en inglés
+  const enKey = await searchYouTube(`${movieTitle} official trailer`);
+  if (enKey && !keys.includes(enKey)) keys.push(enKey);
+
+  // 4. TMDB English trailers + teasers
+  try {
+    const type = currentMediaType;
+    const d2 = await fetch(`https://api.themoviedb.org/3/${type}/${id}/videos?api_key=${TMDB_KEY}&language=en-US`).then(r=>r.json());
+    (d2.results||[]).filter(v=>v.site==='YouTube').sort((a,b)=>a.type==='Trailer'?-1:1).forEach(v=>{ if(!keys.includes(v.key)) keys.push(v.key); });
+  } catch(e){}
+
+  // Guardar lista para fallback
+  window._trailerKeys = keys;
+  window._trailerKeyIdx = 0;
+  return keys[0] || null;
 }
 
 // ═══════════════════════════════════════════════
@@ -1557,7 +1569,7 @@ async function loadTrailer(movieId, movieTitle, backdropPath) {
     txt.textContent = 'Ver tráiler';
     btn.addEventListener('click', () => window.open(`https://www.youtube.com/watch?v=${currentTrailerKey}`, '_blank'));
 
-    // Background video
+    // Background video con fallback automático si el video está bloqueado
     const bdEl = document.getElementById('movieBackdrop');
     if (bdEl && backdropPath) {
       bdEl.style.backgroundImage = `url('https://image.tmdb.org/t/p/w1280${backdropPath}')`;
@@ -1565,10 +1577,34 @@ async function loadTrailer(movieId, movieTitle, backdropPath) {
       const iframeEl = document.createElement('iframe');
       iframeEl.id = 'trailerBgIframe';
       iframeEl.referrerPolicy = 'strict-origin-when-cross-origin';
-      iframeEl.src = `https://www.youtube-nocookie.com/embed/${key}?autoplay=1&mute=1&controls=0&loop=1&playlist=${key}&modestbranding=1&rel=0&playsinline=1`;
-      iframeEl.style.cssText = 'position:absolute;top:50%;left:60%;width:200%;height:200%;transform:translate(-50%,-50%);border:none;pointer-events:none;opacity:0;transition:opacity 1.8s ease;';
       iframeEl.allow = 'autoplay; encrypted-media';
+      iframeEl.style.cssText = 'position:absolute;top:50%;left:60%;width:200%;height:200%;transform:translate(-50%,-50%);border:none;pointer-events:none;opacity:0;transition:opacity 1.8s ease;';
       bdEl.appendChild(iframeEl);
+
+      function setBgKey(k) {
+        iframeEl.src = `https://www.youtube-nocookie.com/embed/${k}?autoplay=1&mute=1&controls=0&loop=1&playlist=${k}&modestbranding=1&rel=0&playsinline=1&enablejsapi=1`;
+        currentTrailerKey = k;
+      }
+      setBgKey(key);
+
+      // Escuchar mensajes de YouTube para detectar video bloqueado
+      const _msgHandler = (e) => {
+        if (!e.data) return;
+        let data = e.data;
+        if (typeof data === 'string') { try { data = JSON.parse(data); } catch(err) { return; } }
+        // Error 150 = bloqueado por el propietario, 101 = bloqueado por país
+        if (data.event === 'onError' && (data.info === 150 || data.info === 101 || data.info === 100)) {
+          const keys = window._trailerKeys || [];
+          window._trailerKeyIdx = (window._trailerKeyIdx || 0) + 1;
+          if (window._trailerKeyIdx < keys.length) {
+            setBgKey(keys[window._trailerKeyIdx]);
+          } else {
+            window.removeEventListener('message', _msgHandler);
+          }
+        }
+      };
+      window.addEventListener('message', _msgHandler);
+
       setTimeout(() => { const el = document.getElementById('trailerBgIframe'); if (el) el.style.opacity = '1'; }, 1500);
     }
     const eyeBtn = document.getElementById('trailerBgBtn');

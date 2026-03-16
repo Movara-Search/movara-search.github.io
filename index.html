@@ -37,7 +37,7 @@ body {
   color: var(--t1);
   font-family: 'DM Sans', sans-serif;
   min-height: 100vh;
-  padding: 32px 20px 60px;
+  padding: 42px 20px 60px;
   display: flex;
   justify-content: center;
 }
@@ -2371,8 +2371,9 @@ function renderPersonFilms() {
 
     const card = document.createElement('a');
     card.className = 'browse-card';
-    card.href = `?id=${item.id}&type=${mt}`;
-    const hasNewContent = hasNewBadge(item.id, mt);
+    const _imt = item.media_type || 'movie';
+    card.href = `?id=${item.id}&type=${_imt}`;
+    const hasNewContent = hasNewBadge(item.id, _imt);
     card.innerHTML = `
       <img src="https://image.tmdb.org/t/p/w342${item.poster_path}" alt="${title}" loading="lazy">
       ${hasNewContent ? '<div class="card-new-badge" title="¡Nuevo contenido disponible!"></div>' : ''}
@@ -2417,22 +2418,19 @@ function showMorePersonFilms() {
 async function translateBio(text) {
   if (!text) return null;
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [{
-          role: 'user',
-          content: `Traducí este texto al español de forma natural. Devolvé SOLO el texto traducido, sin comillas ni explicaciones:
-
-${text.slice(0, 800)}`
-        }]
-      })
-    });
-    const data = await response.json();
-    return data.content?.[0]?.text || null;
+    // MyMemory: API gratuita de traducción, sin key requerida
+    const chunks = [];
+    // Dividir en chunks de 500 chars (límite de MyMemory)
+    for (let i = 0; i < Math.min(text.length, 1500); i += 450) {
+      chunks.push(text.slice(i, i + 450));
+    }
+    const translated = await Promise.all(chunks.map(async chunk => {
+      const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(chunk)}&langpair=en|es`;
+      const r = await fetch(url);
+      const d = await r.json();
+      return d.responseData?.translatedText || chunk;
+    }));
+    return translated.join(' ');
   } catch(e) {
     return null;
   }
@@ -2440,6 +2438,7 @@ ${text.slice(0, 800)}`
 
 async function renderPersonCard(person) {
   const container = document.getElementById('container');
+  container.innerHTML = `<div class="state-msg"><div class="spinner"></div> Cargando perfil de ${person.name || 'actor'}…</div>`;
   
   if (!person.id) {
     container.innerHTML = `<div class="state-msg" style="text-align:center;padding:40px;">
@@ -2466,7 +2465,8 @@ async function renderPersonCard(person) {
     container.innerHTML = `<div class="state-msg" style="text-align:center;padding:40px;">
       <div style="font-size:32px;margin-bottom:12px;">😕</div>
       <div style="color:var(--t1);font-weight:600;margin-bottom:6px;">No se pudo cargar el perfil</div>
-      <div style="color:var(--t3);font-size:13px;">${e.message || 'Revisá tu conexión e intentá de nuevo.'}</div>
+      <div style="color:var(--t3);font-size:13px;">${e.message || 'Error desconocido'}</div>
+      <div style="color:#666;font-size:10px;margin-top:8px;font-family:monospace;">ID: ${person.id} · ${e.name || ''}</div>
     </div>`;
     return;
   }
@@ -2919,25 +2919,19 @@ function renderResultPlatforms(title) {
 // ── Open a single item detail (movie, series, or person) ──────────────────
 async function openDetail(item) {
   const container = document.getElementById('container');
-  container.innerHTML = `<div class="state-msg"><div class="spinner"></div> Cargando…</div>`;
+  container.innerHTML = '<div class="state-msg"><div class="spinner"></div> Cargando…</div>';
   currentTrailerKey = null;
   if (!window._fromHistorial) window._fromHistorial = false;
 
+  // Personas: flujo separado sin try compartido con mt
+  if (item._isPerson) {
+    pushHistory({ type: 'detail', item: Object.assign({}, item, { _isPerson: true }) });
+    await renderPersonCard(item);
+    return;
+  }
+
   try {
-    if (item._isPerson) {
-      pushHistory({ type: 'detail', item: { ...item, _isPerson: true } });
-      try {
-        await renderPersonCard(item);
-      } catch(personErr) {
-        console.error('renderPersonCard error:', personErr);
-        container.innerHTML = `<div class="state-msg" style="text-align:center;padding:40px;">
-          <div style="font-size:32px;margin-bottom:12px;">😕</div>
-          <div style="color:var(--t1);font-weight:600;margin-bottom:6px;">No se pudo cargar el perfil</div>
-          <div style="color:var(--t3);font-size:13px;">Revisá tu conexión e intentá de nuevo.</div>
-        </div>`;
-      }
-      return;
-    }
+    const _dummy = null; // separador
 
     const mt = item.media_type || item._mt || 'movie';
     currentMediaType = mt;

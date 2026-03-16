@@ -1584,7 +1584,31 @@ async function loadTrailer(movieId, movieTitle, backdropPath) {
       function setBgKey(k) {
         iframeEl.src = `https://www.youtube-nocookie.com/embed/${k}?autoplay=1&mute=1&controls=0&loop=1&playlist=${k}&modestbranding=1&rel=0&playsinline=1&enablejsapi=1`;
         currentTrailerKey = k;
+
+        // Si en 5 segundos el video no arrancó (bloqueado por país/propietario), probar el siguiente
+        clearTimeout(iframeEl._blockTimer);
+        iframeEl._blockTimer = setTimeout(() => {
+          // Intentar detectar si el iframe muestra error revisando si podemos comunicarnos con él
+          // Si el video estuviera reproduciendo, habría mandado mensajes; si no mandó nada, está bloqueado
+          const keys = window._trailerKeys || [];
+          const idx = window._trailerKeyIdx || 0;
+          if (idx + 1 < keys.length) {
+            window._trailerKeyIdx = idx + 1;
+            setBgKey(keys[window._trailerKeyIdx]);
+          }
+        }, 5000);
       }
+
+      // Cuando el video SÍ reproduce, cancela el timer
+      window.addEventListener('message', (e) => {
+        if (!e.data) return;
+        let data = e.data;
+        if (typeof data === 'string') { try { data = JSON.parse(data); } catch(err) { return; } }
+        if (data.event === 'onStateChange' && data.info === 1) {
+          // Estado 1 = reproduciendo → cancelar timer, funciona bien
+          clearTimeout(iframeEl._blockTimer);
+        }
+      });
       setBgKey(key);
 
       // Escuchar mensajes de YouTube para detectar video bloqueado

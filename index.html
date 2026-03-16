@@ -43,7 +43,7 @@ body {
 }
 
 
-.wrap { width: 100%; max-width: 1400px; padding: 0 24px; box-sizing: border-box; }
+.wrap { width: 100%; max-width: 1600px; padding: 0 16px; box-sizing: border-box; }
 
 /* ── HEADER ─────────────────────────── */
 .site-header {
@@ -264,12 +264,12 @@ body {
   position: relative;
 }
 .movie-backdrop {
-  position: absolute; top: 0; left: 0; right: 0; height: 380px; z-index: 0;
+  position: absolute; top: 0; left: 0; right: 0; height: 460px; z-index: 0;
   background-size: cover; background-position: center 20%;
   transition: opacity .8s ease;
 }
 .movie-backdrop-fade {
-  position: absolute; top: 0; left: 0; right: 0; height: 380px; z-index: 1;
+  position: absolute; top: 0; left: 0; right: 0; height: 460px; z-index: 1;
   background: linear-gradient(to bottom, rgba(14,14,18,.15) 0%, rgba(14,14,18,.55) 50%, #141417 100%);
 }
 .movie-card > *:not(.movie-backdrop):not(.movie-backdrop-fade) { position: relative; z-index: 2; }
@@ -282,7 +282,7 @@ body {
 
 .poster-col {
   flex-shrink: 0;
-  width: 280px;
+  width: 340px;
   position: relative;
   overflow: hidden;
   border-radius: 12px;
@@ -362,11 +362,10 @@ body {
 .trailer-btn:hover { background: #cc2020; box-shadow: 0 0 14px rgba(232,64,64,.3); }
 .trailer-btn svg { flex-shrink: 0; }
 
-/* Trailer modal */
 .trailer-modal {
   display: none;
   position: fixed; inset: 0; z-index: 999;
-  background: rgba(0,0,0,.88);
+  background: rgba(0,0,0,.92);
   align-items: center; justify-content: center;
   padding: 20px;
   animation: fadeBg .18s ease;
@@ -374,7 +373,7 @@ body {
 @keyframes fadeBg { from { opacity:0; } to { opacity:1; } }
 .trailer-modal.open { display: flex; }
 .trailer-modal-inner {
-  width: 100%; max-width: 860px;
+  width: 100%; max-width: 1560px;
   background: var(--bg1);
   border: 1px solid var(--border2);
   border-radius: 14px;
@@ -397,11 +396,8 @@ body {
 }
 .modal-close:hover { background: var(--bg3); color: var(--t1); }
 .trailer-modal iframe {
-  width: 100%; height: 480px;
+  width: 100%; height: 720px;
   border: none; display: block;
-}
-@media (max-width: 640px) {
-  .trailer-modal iframe { height: 220px; }
 }
 
 /* ── PLATFORMS SECTION ───────────────── */
@@ -1000,6 +996,9 @@ body {
 body.tv-mode {
   zoom: 1.35;
 }
+body.tv-mode #trailerModal {
+  zoom: 1;
+}
 body.tv-mode #tvModeBtn {
   background: var(--acc-lo) !important;
   border-color: var(--accent) !important;
@@ -1296,7 +1295,10 @@ onAuthStateChanged(auth, async (user) => {
   <div class="trailer-modal-inner">
     <div class="trailer-modal-head">
       <span id="modalTitle">TRÁILER</span>
-      <button class="modal-close" id="modalClose">✕ Cerrar</button>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button id="modalOpenExternal" onclick="window.open(_currentEpUrl,'_blank')" style="display:none;background:var(--accent);color:#000;border:none;border-radius:6px;padding:4px 12px;font-size:11px;font-family:'DM Sans',sans-serif;font-weight:700;cursor:pointer;">↗ Abrir en nueva pestaña</button>
+        <button class="modal-close" id="modalClose">✕ Cerrar</button>
+      </div>
     </div>
     <iframe id="trailerIframe" allowfullscreen allow="autoplay; encrypted-media"
       src="" frameborder="0"></iframe>
@@ -1309,34 +1311,8 @@ onAuthStateChanged(auth, async (user) => {
 // ═══════════════════════════════════════════════
 const TMDB_KEY = "68665a6217ad91b1d16292b0fff543dc";
 const TMDB_IMG = "https://image.tmdb.org/t/p/w500";
-let currentMediaType = 'movie';
+let currentMediaType = 'movie'; // updated on each search
 const COUNTRY  = "AR";
-
-// Trailer modal close
-document.getElementById('modalClose').addEventListener('click', () => {
-  document.getElementById('trailerModal').classList.remove('open');
-  document.getElementById('trailerIframe').src = '';
-});
-document.getElementById('trailerModal').addEventListener('click', (e) => {
-  if (e.target === e.currentTarget) {
-    e.currentTarget.classList.remove('open');
-    document.getElementById('trailerIframe').src = '';
-  }
-});
-
-// Trailer modal close
-document.getElementById('modalClose').addEventListener('click', () => {
-  const modal = document.getElementById('trailerModal');
-  const iframe = document.getElementById('trailerIframe');
-  if (modal) modal.classList.remove('open');
-  if (iframe) iframe.src = ''; // stop video
-});
-document.getElementById('trailerModal').addEventListener('click', (e) => {
-  if (e.target === e.currentTarget) {
-    e.currentTarget.classList.remove('open');
-    document.getElementById('trailerIframe').src = '';
-  }
-});
 
 const DEFAULT_PLATFORMS = [
   { name:"Netflix",      domain:"netflix.com",       url:"https://www.netflix.com/search?q={q}",                      unofficial:false },
@@ -1348,9 +1324,10 @@ const DEFAULT_PLATFORMS = [
   { name:"PelisFlix",    domain:"pelisflix1.homes",  url:"https://pelisflix1.homes/?s={q}",                           unofficial:true  },
   { name:"Cuevana",      domain:"cuevana.bi",        url:"https://cuevana.bi/explorar?s={q}",                                 unofficial:true  },
   { name:"HDFull",       domain:"hdfull.org",        url:"https://hdfull.org/{type}/{slug}",                         unofficial:true  },
-  { name:"PelisPlusHD",   domain:"pelisplushd.ms",      url:"https://www.pelisplushd.ms/search?s={q}",                  unofficial:true  },
-  { name:"PelisPedia",    domain:"pelispedia.mov",       url:"https://pelispedia.mov/search?s={q_es}",                   unofficial:true  },
-  { name:"SeriesFlixHD",  domain:"seriesflixhd.shop",   url:"https://seriesflixhd.shop/?s={q}",                         unofficial:true  },
+  { name:"PelisPlusHD",  domain:"pelisplushd.ms",    url:"https://www.pelisplushd.ms/search?s={q}",                   unofficial:true  },
+  { name:"SeriesFlixHD", domain:"seriesflixhd.shop", url:"https://seriesflixhd.shop/?s={q}",                          unofficial:true  },
+  { name:"HDFull",       domain:"hdfull.org",        url:"https://hdfull.org/{type}/{slug}",                          unofficial:true, noEmbed:true },
+  { name:"PelisPedia",   domain:"pelispedia.mov",    url:"https://pelispedia.mov/search?s={q_es}",                    unofficial:true, noEmbed:true },
 ];
 
 // JustWatch provider IDs → domain mapping (AR catalogue)
@@ -1504,31 +1481,59 @@ async function tmdbVideos(id, movieTitle) {
   return trailer?.key || null;
 }
 
-async function tmdbVimeoKey(id) {
-  // Look for Vimeo trailers in TMDB as embed-friendly alternative
-  const type = currentMediaType;
-  try {
-    const [r1, r2] = await Promise.all([
-      fetch(`https://api.themoviedb.org/3/${type}/${id}/videos?api_key=${TMDB_KEY}&language=es`).then(r=>r.json()),
-      fetch(`https://api.themoviedb.org/3/${type}/${id}/videos?api_key=${TMDB_KEY}&language=en-US`).then(r=>r.json()),
-    ]);
-    const all = [...(r1.results||[]), ...(r2.results||[])];
-    const vimeo = all.find(v => v.site === 'Vimeo' && v.type === 'Trailer');
-    return vimeo?.key || null;
-  } catch(e) { return null; }
-}
-
 // ═══════════════════════════════════════════════
 // TRAILER
 // ═══════════════════════════════════════════════
 let currentTrailerKey = null;
 
+const VIMEUS_KEY = '4DL4AVqKMbxdJFSTBBOv_9klknyRn9OMuJtT_EjkHT4';
+let _currentEpUrl = null;
+
+function togglePirateMenu() {
+  const menu = document.getElementById('pirateMenu');
+  if (!menu) return;
+  const isOpen = menu.style.display === 'block';
+  menu.style.display = isOpen ? 'none' : 'block';
+  if (!isOpen) {
+    setTimeout(() => {
+      document.addEventListener('click', function closeMenu(e) {
+        const wrap = document.getElementById('pirateMenuWrap');
+        if (wrap && !wrap.contains(e.target)) {
+          menu.style.display = 'none';
+          document.removeEventListener('click', closeMenu);
+        }
+      });
+    }, 0);
+  }
+}
+
+function openVimeusPlayer() {
+  if (!currentDetailId) return;
+  const type = currentDetailType === 'tv' ? 'serie' : 'movie';
+  const url = `https://vimeus.com/e/${type}?tmdb=${currentDetailId}&view_key=${VIMEUS_KEY}&theme=cosmic&loader=v3&font=v3&overlay=v5&playUI=v3&splash=v3`;
+  openEpisodePlayer(url, currentDetailTitle || '', 'Vimeus');
+}
+
+function openEpisodePlayer(url, title, platform) {
+  const modal = document.getElementById('trailerModal');
+  const iframe = document.getElementById('trailerIframe');
+  const titleEl = document.getElementById('modalTitle');
+  if (!modal || !iframe) { window.open(url, '_blank'); return; }
+  _currentEpUrl = url;
+  if (titleEl) titleEl.textContent = title || 'REPRODUCIENDO';
+  iframe.src = url;
+  modal.classList.add('open');
+  const ob = document.getElementById('modalOpenExternal');
+  if (ob) ob.style.display = 'none';
+  const fallbackTimer = setTimeout(() => {
+    const openBtn = document.getElementById('modalOpenExternal');
+    if (openBtn) openBtn.style.display = 'inline-flex';
+  }, 4000);
+  iframe.onload = () => clearTimeout(fallbackTimer);
+}
+
 async function loadTrailer(movieId, movieTitle, backdropPath) {
-  const [ytKey, vimeoKey] = await Promise.all([
-    tmdbVideos(movieId, movieTitle),
-    tmdbVimeoKey(movieId),
-  ]);
-  const key = ytKey;
+  const key = await tmdbVideos(movieId, movieTitle);
   const btn = document.getElementById('trailerBtn');
   const txt = document.getElementById('trailerBtnText');
   if (!btn) return;
@@ -1537,41 +1542,29 @@ async function loadTrailer(movieId, movieTitle, backdropPath) {
     btn.disabled = false;
     txt.textContent = 'Ver tráiler';
     btn.addEventListener('click', () => window.open(`https://www.youtube.com/watch?v=${currentTrailerKey}`, '_blank'));
+
+    // Background video
+    const bdEl = document.getElementById('movieBackdrop');
+    if (bdEl && backdropPath) {
+      bdEl.style.backgroundImage = `url('https://image.tmdb.org/t/p/w1280${backdropPath}')`;
+      bdEl.style.overflow = 'hidden';
+      const iframeEl = document.createElement('iframe');
+      iframeEl.id = 'trailerBgIframe';
+      iframeEl.referrerPolicy = 'strict-origin-when-cross-origin';
+      iframeEl.src = `https://www.youtube-nocookie.com/embed/${key}?autoplay=1&mute=1&controls=0&loop=1&playlist=${key}&modestbranding=1&rel=0&playsinline=1`;
+      iframeEl.style.cssText = 'position:absolute;top:50%;left:60%;width:200%;height:200%;transform:translate(-50%,-50%);border:none;pointer-events:none;opacity:0;transition:opacity 1.8s ease;';
+      iframeEl.allow = 'autoplay; encrypted-media';
+      bdEl.appendChild(iframeEl);
+      setTimeout(() => { const el = document.getElementById('trailerBgIframe'); if (el) el.style.opacity = '1'; }, 2500);
+    }
+    const eyeBtn = document.getElementById('trailerBgBtn');
+    if (eyeBtn) eyeBtn.style.display = 'flex';
   } else {
     txt.textContent = 'Tráiler no disponible';
     btn.style.opacity = '.4';
     btn.style.cursor = 'default';
   }
-
-  // Background video: prefer Vimeo (always embeddable), fallback to YouTube
-  const bgKey = vimeoKey || key;
-  const bgSite = vimeoKey ? 'vimeo' : 'youtube';
-  const bdEl = document.getElementById('movieBackdrop');
-  if (bdEl && backdropPath && bgKey) {
-    bdEl.style.backgroundImage = `url('https://image.tmdb.org/t/p/w1280${backdropPath}')`;
-    bdEl.style.overflow = 'hidden';
-    const iframeEl = document.createElement('iframe');
-    iframeEl.id = 'trailerBgIframe';
-    iframeEl.referrerPolicy = 'strict-origin-when-cross-origin';
-    if (bgSite === 'vimeo') {
-      iframeEl.src = `https://player.vimeo.com/video/${bgKey}?autoplay=1&muted=1&loop=1&background=1`;
-    } else {
-      iframeEl.src = `https://www.youtube-nocookie.com/embed/${bgKey}?autoplay=1&mute=1&controls=0&loop=1&playlist=${bgKey}&modestbranding=1&rel=0&playsinline=1`;
-    }
-    iframeEl.style.cssText = 'position:absolute;top:50%;left:60%;width:200%;height:200%;transform:translate(-50%,-50%);border:none;pointer-events:none;opacity:0;transition:opacity 1.8s ease;';
-    iframeEl.allow = 'autoplay; encrypted-media';
-    bdEl.appendChild(iframeEl);
-    setTimeout(() => {
-      const el = document.getElementById('trailerBgIframe');
-      if (el) el.style.opacity = '1';
-    }, bgSite === 'vimeo' ? 1500 : 2500);
-
-    // Show eye button
-    const eyeBtn = document.getElementById('trailerBgBtn');
-    if (eyeBtn && key) eyeBtn.style.display = 'flex';
-  }
 }
-
 
 function openTrailerModal() {
   if (!currentTrailerKey) return;
@@ -1579,6 +1572,7 @@ function openTrailerModal() {
   const iframe = document.getElementById('trailerIframe');
   if (modal && iframe) {
     iframe.src = `https://www.youtube-nocookie.com/embed/${currentTrailerKey}?autoplay=1`;
+    document.getElementById('modalTitle').textContent = 'TRÁILER';
     modal.classList.add('open');
   }
 }
@@ -1592,15 +1586,17 @@ let activePlatform = null; // 'cuevana' | 'pelisflix' | null
 function renderEpPlatformSelector() {
   const sel = document.getElementById('epPlatformSelector');
   if (!sel) return;
-  const cuevana   = platforms.find(p => p.domain === 'cuevana.bi');
+  const cuevana    = platforms.find(p => p.domain === 'cuevana.bi');
   const pelisflix  = platforms.find(p => p.domain === 'pelisflix1.homes');
   const hdfull     = platforms.find(p => p.domain === 'hdfull.org');
   const pelisplushd= platforms.find(p => p.domain === 'pelisplushd.ms');
+  const pelispedia = platforms.find(p => p.domain === 'pelispedia.mov');
   const opts = [];
-  if (cuevana)    opts.push({ key: 'cuevana',    label: 'Cuevana',     color: '#e8c547' });
-  if (pelisflix)  opts.push({ key: 'pelisflix',  label: 'PelisFlix',   color: '#3b82f6' });
-  if (hdfull)     opts.push({ key: 'hdfull',     label: 'HDFull',      color: '#10b981' });
-  if (pelisplushd)opts.push({ key: 'pelisplushd',label: 'PelisPlusHD', color: '#f97316' });
+  if (cuevana)    opts.push({ key: 'cuevana',    label: 'Cuevana',      color: '#e8c547' });
+  if (pelisflix)  opts.push({ key: 'pelisflix',  label: 'PelisFlix',    color: '#3b82f6' });
+  if (hdfull)     opts.push({ key: 'hdfull',     label: 'HDFull ↗',    color: '#10b981' });
+  if (pelisplushd)opts.push({ key: 'pelisplushd',label: 'PelisPlusHD',  color: '#f97316' });
+  if (pelispedia) opts.push({ key: 'pelispedia', label: 'PelisPedia ↗', color: '#a855f7' });
   if (!opts.length) { sel.style.display = 'none'; return; }
   sel.innerHTML = '<span style="font-size:11px;color:var(--t3);font-family:DM Mono,monospace;align-self:center;">VER EN:</span>';
   opts.forEach(opt => {
@@ -1798,10 +1794,12 @@ async function toggleSeason(tvId, seasonNum, clickedCard, histMode) {
         : `<div class="ep-thumb-placeholder">🎬</div>`;
       // Build row content based on mode
       const isWatched = getWatched().includes(seasonNum + 'x' + epNum);
-      const playBtnHtml = histMode ? '' : `<button class="ep-play-btn${activePlatform ? ' ready' : ''}"
+      const pelispediaUrl = `https://pelispedia.mov/search?s=${encodeURIComponent(currentDetailTitle||'')}`;
+      const playBtnHtml = histMode ? '' : `<button class="ep-play-btn ready"
         data-cuevana="${cuevanaUrl}" data-pelisflix="${pelisflixUrl}"
         data-hdfull="${hdfullUrl}" data-pelisplushd="${pelisplushUrl}"
-        title="Reproducir">▶</button>`;
+        data-pelispedia="${pelispediaUrl}"
+        title="Reproducir con Vimeus">▶</button>`;
       // Eye: only shown in normal mode (not historial), only clickeable to UNWATCH (not to watch manually)
       const eyeHtml = histMode
         ? (isWatched ? '<span class="ep-eye-btn watched" style="pointer-events:none;cursor:default;background:none;border:none;font-size:16px;">👁</span>' : '')
@@ -1821,17 +1819,28 @@ async function toggleSeason(tvId, seasonNum, clickedCard, histMode) {
         </div>`;
 
       if (!histMode) {
-        // Play: open link + auto-mark watched
+        const noEmbedPlatforms = new Set(['hdfull', 'pelispedia']);
         row.querySelector('.ep-play-btn')?.addEventListener('click', async (e) => {
           e.stopPropagation();
-          if (!activePlatform) return;
-          const urls = {
-            cuevana:    e.currentTarget.dataset.cuevana,
-            pelisflix:  e.currentTarget.dataset.pelisflix,
-            hdfull:     e.currentTarget.dataset.hdfull,
-            pelisplushd:e.currentTarget.dataset.pelisplushd,
-          };
-          window.open(urls[activePlatform], '_blank');
+          if (activePlatform && activePlatform !== 'vimeus') {
+            // VER EN override
+            const urls = {
+              cuevana:    e.currentTarget.dataset.cuevana,
+              pelisflix:  e.currentTarget.dataset.pelisflix,
+              hdfull:     e.currentTarget.dataset.hdfull,
+              pelisplushd:e.currentTarget.dataset.pelisplushd,
+              pelispedia: e.currentTarget.dataset.pelispedia,
+            };
+            const url = urls[activePlatform];
+            if (url) {
+              if (noEmbedPlatforms.has(activePlatform)) window.open(url, '_blank');
+              else openEpisodePlayer(url, `${currentDetailTitle} — T${seasonNum}E${epNum}`, activePlatform);
+            }
+          } else {
+            // Default: Vimeus
+            const vimeusUrl = `https://vimeus.com/e/serie?tmdb=${currentDetailId}&se=${seasonNum}&ep=${epNum}&view_key=${VIMEUS_KEY}&theme=cosmic&loader=v3&font=v3&overlay=v5&playUI=v3&splash=v3`;
+            openEpisodePlayer(vimeusUrl, `${currentDetailTitle} — T${seasonNum}E${epNum}`, 'Vimeus');
+          }
           if (!getWatched().includes(seasonNum + 'x' + epNum)) {
             const eyeBtn = row.querySelector('.ep-eye-btn');
             await toggleWatched(seasonNum, epNum, eyeBtn);
@@ -1893,6 +1902,11 @@ function buildCard(movie, poster, year, rating, q, seasons, genres, fromHistoria
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
             <span id="trailerBtnText">Cargando tráiler…</span>
           </button>
+          ${!isHist ? `
+          <button class="trailer-btn" id="playMovieBtn" style="background:#dc2626;" onclick="openVimeusPlayer()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            <span>Reproducir</span>
+          </button>` : ''}
           <button class="trailer-btn" id="recsBtn" style="background:#2563eb;" onclick="toggleRecs()">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
             <span>Recomendaciones</span>
@@ -1905,7 +1919,7 @@ function buildCard(movie, poster, year, rating, q, seasons, genres, fromHistoria
           ${!isHist ? `
           <button class="trailer-btn" id="whereBtn" style="background:#0d9488;display:none;" onclick="openJustWatch()">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-            <span>Dónde ver</span>
+            <span>TMDB</span>
           </button>` : ''}
           <button class="trailer-btn" id="markWatchedBtn" style="display:none;" onclick="toggleMarkWatched()">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
@@ -2175,8 +2189,9 @@ function renderPersonFilms() {
     const type = item.media_type === 'tv' ? 'Serie' : 'Película';
     if (!item.poster_path) return;
 
-    const card = document.createElement('div');
+    const card = document.createElement('a');
     card.className = 'browse-card';
+    card.href = `?id=${item.id}&type=${mt}`;
     card.innerHTML = `
       <img src="https://image.tmdb.org/t/p/w342${item.poster_path}" alt="${title}" loading="lazy">
       <div class="browse-card-body">
@@ -2401,7 +2416,7 @@ async function surpriseMe() {
           <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:22px 22px 22px 18px;min-width:0;pointer-events:all;">
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px;">
               <div id="srTitleText" style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:#fff;letter-spacing:.04em;line-height:1.1;text-shadow:0 2px 8px rgba(0,0,0,.9);flex:1;min-width:0;"></div>
-              <button id="srTrailerBtn" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:7px;padding:6px 14px;font-size:12px;font-family:sans-serif;font-weight:600;cursor:pointer;white-space:nowrap;backdrop-filter:blur(4px);transition:background .15s;flex-shrink:0;display:none;">🎬 Trailer</button>
+              
             </div>
             <div id="srYearText" style="font-size:12px;color:rgba(255,255,255,.55);font-family:'DM Sans',sans-serif;margin-bottom:10px;"></div>
             <div id="srOverview" style="font-size:12px;color:rgba(255,255,255,.78);font-family:'DM Sans',sans-serif;line-height:1.55;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden;"></div>
@@ -2431,7 +2446,7 @@ async function surpriseMe() {
 
     document.getElementById('srSpinBtn').addEventListener('click', async (e) => {
       e.stopPropagation();
-      // Hide reveal panel, fetch new item, re-run animation without removing overlay
+      // Hide reveal panel and re-spin without removing overlay
       const reveal = document.getElementById('srReveal');
       if (reveal) reveal.style.opacity = '0';
       cancelled = true;
@@ -2641,35 +2656,57 @@ function toggleStreamingMenu(e) {
 function renderResultPlatforms(title) {
   const container = document.getElementById('resultPlatforms');
   if (!container) return;
-  // Use original title (usually English) for better search results
   const searchTitle = currentDetailOriginal || title;
   const q = encodeURIComponent(searchTitle);
   const q_es = title.trim().replace(/\s+/g, '+');
-  // slug: lowercase, spaces→hyphens, remove special chars
   const slug = title.toLowerCase()
     .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-z0-9\s-]/g, '')
     .trim().replace(/\s+/g, '-');
   const type = currentMediaType === 'tv' ? 'serie' : 'pelicula';
 
-  // For TV series: only show legal platforms (unofficial ones appear in episode list)
-  let filteredPlatforms = platforms;
-
-  // Always show all platforms - no filtering
+  const legalDomains = new Set(['netflix.com','primevideo.com','disneyplus.com','max.com','tv.apple.com','paramountplus.com','starplus.com','movistarplus.es','clarovideo.com']);
+  const unofficialDomains = new Set(['pelisflix1.homes','cuevana.bi','hdfull.org','pelisplushd.ms','pelispedia.mov','seriesflixhd.shop']);
+  const legalPlatforms = platforms.filter(p => legalDomains.has(p.domain));
+  const unofficialPlatforms = platforms.filter(p => unofficialDomains.has(p.domain));
 
   const faviconOverrides = {
     'pelisflix1.homes': 'https://s.pelisflix1.homes/flix/imgs/cropped-1F17F-p-button-128-32x32.png',
     'pelisplushd.ms':   'https://image.winudf.com/v2/image1/cGVsaXNwbHVzLmFwbGlrZnRfaWNvbl8xNjQyOTc5Mjg3XzA1Nw/icon.webp?w=140&fakeurl=1&type=.webp',
   };
 
-  container.innerHTML = filteredPlatforms.map(p => {
+  container.innerHTML = legalPlatforms.map(p => {
     const url = p.url.replace('{q}', q).replace('{q_es}', q_es).replace('{slug}', slug).replace('{type}', type);
     const fav = faviconOverrides[p.domain] || `https://www.google.com/s2/favicons?sz=64&domain=${p.domain}`;
-    return `<a class="rp-btn" href="${url}" target="_blank">
+    return `<a class="rp-btn" href="${url}" target="_blank" title="${p.name}">
       <img src="${fav}" alt="${p.name}">
       <span>${p.name}</span>
     </a>`;
+  }).join('') + `
+  <div style="position:relative;display:inline-block;" id="pirateMenuWrap">
+    <button class="rp-btn" onclick="togglePirateMenu()" title="Plataformas alternativas">
+      <span style="font-size:22px;line-height:34px;display:block;width:34px;height:34px;text-align:center;">☠️</span>
+    </button>
+    <div id="pirateMenu" style="display:none;position:absolute;bottom:calc(100% + 8px);left:0;background:var(--bg2);border:1px solid var(--border2);border-radius:12px;padding:10px;z-index:100;box-shadow:0 8px 24px rgba(0,0,0,.5);min-width:max-content;">
+      <div style="font-size:9px;color:var(--t3);font-family:'DM Mono',monospace;letter-spacing:.1em;padding:0 2px 8px;text-transform:uppercase;">Alternativas</div>
+      <div id="pirateMenuItems" style="display:flex;gap:6px;flex-wrap:nowrap;"></div>
+    </div>
+  </div>`;
+
+  const pirateItems = unofficialPlatforms.map(p => {
+    const url = p.url.replace('{q}', q).replace('{q_es}', q_es).replace('{slug}', slug).replace('{type}', type);
+    const fav = faviconOverrides[p.domain] || `https://www.google.com/s2/favicons?sz=64&domain=${p.domain}`;
+    const action = p.noEmbed
+      ? `document.getElementById('pirateMenu').style.display='none';window.open('${url.replace(/'/g,"\\'")}','_blank')`
+      : `document.getElementById('pirateMenu').style.display='none';openEpisodePlayer('${url.replace(/'/g,"\\'")}','${(currentDetailTitle||'').replace(/'/g,"\\'")}','${p.name}')`;
+    return `<button onclick="${action}" title="${p.name}"
+      style="background:var(--bg3);border:1px solid var(--border2);border-radius:14px;padding:7px 10px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;"
+      onmouseover="this.style.background='var(--acc-lo)';this.style.borderColor='var(--accent)';this.style.transform='translateY(-1px)'"
+      onmouseout="this.style.background='var(--bg3)';this.style.borderColor='var(--border2)';this.style.transform=''">
+      <img src="${fav}" alt="${p.name}" style="width:34px;height:34px;border-radius:9px;object-fit:cover;display:block;">
+    </button>`;
   }).join('');
+  setTimeout(() => { const el = document.getElementById('pirateMenuItems'); if (el) el.innerHTML = pirateItems; }, 0);
 }
 
 // ═══════════════════════════════════════════════
@@ -2719,13 +2756,11 @@ async function openDetail(item) {
     currentDetailPoster   = item.poster_path || '';
     currentDetailYear     = String(year);
     currentDetailType     = mt;
+    document.title = `${currentDetailTitle} (${mt === 'tv' ? 'Serie' : 'Película'}) — Movara`;
     recsLoaded = false;
     recsVisible = false;
     recsPage = 1;
     recsAllItems = [];
-    // Update page title
-    const typeLabel = mt === 'tv' ? 'Serie' : 'Película';
-    document.title = `${currentDetailTitle} (${typeLabel}) — Movara`;
     // Enrich item with full details for synopsis/rating
     item._overview = detFull.overview || item.overview || '';
     item.overview  = item._overview;
@@ -2735,6 +2770,7 @@ async function openDetail(item) {
 
     if (backdropPath) {
       const bdEl = document.getElementById('movieBackdrop');
+      const fadeEl = document.getElementById('movieBackdropFade');
       if (bdEl) {
         bdEl.style.backgroundImage = `url('https://image.tmdb.org/t/p/w1280${backdropPath}')`;
       }
@@ -2907,11 +2943,9 @@ function renderSearchResultCards(grid, items) {
     const rating = item.vote_average ? item.vote_average.toFixed(1) : '—';
     const imgPath = item.poster_path || item.profile_path;
     const type = isPerson ? 'Persona' : (item.media_type === 'tv' ? 'Serie' : 'Película');
-    const mt = item.media_type || 'movie';
 
-    const card = document.createElement('a');
+    const card = document.createElement('div');
     card.className = 'browse-card';
-    card.href = isPerson ? `?person=${item.id}` : `?id=${item.id}&type=${mt}`;
     card.innerHTML = `
       <img src="https://image.tmdb.org/t/p/w342${imgPath}" alt="${title}" loading="lazy">
       <div class="browse-card-body">
@@ -2923,11 +2957,7 @@ function renderSearchResultCards(grid, items) {
         <div class="bct-meta">${isPerson ? type : (rating+'/10 · '+year+' · '+type)}</div>
         <div class="bct-overview">${overview.slice(0,200)}</div>
       </div>`;
-    card.addEventListener('click', (e) => {
-      if (e.ctrlKey || e.metaKey || e.button === 1) return;
-      e.preventDefault();
-      openDetail(item);
-    });
+    card.addEventListener('click', () => openDetail(item));
     grid.appendChild(card);
   });
 }
@@ -3391,7 +3421,6 @@ async function loadBrowseGrid(append = false) {
     }
     // genre, year, type modes — fetch movie+tv
     let mediaTypes = mode === 'type' ? [value] : ['movie','tv'];
-
     if (mode === 'anime') {
       const [rm, rt] = await Promise.all([
         fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_KEY}&language=es-ES&with_genres=16&with_keywords=210024&sort_by=${sortBy}&page=${browsePage}`).then(r=>r.json()),
@@ -3467,7 +3496,7 @@ function renderBrowseGrid(grid, items, forceType, showMoreBtnId) {
         <div class="bct-overview">${(item.overview||'').slice(0,120)}${(item.overview||'').length>120?'…':''}</div>
       </div>`;
     card.addEventListener('click', (e) => {
-      if (e.ctrlKey || e.metaKey || e.button === 1) return; // let browser handle new tab
+      if (e.ctrlKey || e.metaKey || e.button === 1) return;
       e.preventDefault();
       const obj = {...item, media_type: mt};
       openDetail(obj);
@@ -3874,7 +3903,25 @@ _snObserver.observe(document.getElementById('container'), { childList: true, sub
 // Apply on load
 applyTvMode();
 
-// ── Handle URL params for direct links & middle-click ──
+// Trailer modal close
+document.getElementById('modalClose').addEventListener('click', () => {
+  document.getElementById('trailerModal').classList.remove('open');
+  document.getElementById('trailerIframe').src = '';
+  const ob = document.getElementById('modalOpenExternal');
+  if (ob) ob.style.display = 'none';
+  _currentEpUrl = null;
+});
+document.getElementById('trailerModal').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) {
+    e.currentTarget.classList.remove('open');
+    document.getElementById('trailerIframe').src = '';
+    const ob = document.getElementById('modalOpenExternal');
+    if (ob) ob.style.display = 'none';
+    _currentEpUrl = null;
+  }
+});
+
+// URL params for direct links
 async function handleUrlParams() {
   const params = new URLSearchParams(window.location.search);
   const id = params.get('id');

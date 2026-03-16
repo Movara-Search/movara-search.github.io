@@ -37,10 +37,13 @@ body {
   color: var(--t1);
   font-family: 'DM Sans', sans-serif;
   min-height: 100vh;
-  padding: 24px 24px 60px calc(175px + 32px);
+  padding: 32px 20px 60px;
+  display: flex;
+  justify-content: center;
 }
 
-.wrap { width: 100%; max-width: none; box-sizing: border-box; }
+
+.wrap { width: 100%; max-width: 1600px; padding: 0 16px; box-sizing: border-box; }
 
 /* ── HEADER ─────────────────────────── */
 .site-header {
@@ -81,7 +84,7 @@ body {
   font-size: 16px;
 }
 
-#q { flex:1; background:transparent; border:none; color:var(--t1); padding:0 14px; font-family:'DM Sans',sans-serif; font-size:14px; outline:none; height:100%; }
+#q { flex:1; background:transparent; border:none; color:var(--t1); padding:0 18px; font-family:'DM Sans',sans-serif; font-size:15px; outline:none; height:100%; }
 #q::placeholder { color:var(--t3); }
 
 .search-btns { display: flex; gap: 8px; }
@@ -244,12 +247,12 @@ body {
   position: relative;
 }
 .movie-backdrop {
-  position: absolute; top: 0; left: 0; right: 0; height: 460px; z-index: 0;
+  position: absolute; top: 0; left: 0; right: 0; height: 600px; z-index: 0;
   background-size: cover; background-position: center 20%;
   transition: opacity .8s ease;
 }
 .movie-backdrop-fade {
-  position: absolute; top: 0; left: 0; right: 0; height: 460px; z-index: 1;
+  position: absolute; top: 0; left: 0; right: 0; height: 600px; z-index: 1;
   background: linear-gradient(to bottom, rgba(14,14,18,.15) 0%, rgba(14,14,18,.55) 50%, #141417 100%);
 }
 .movie-card > *:not(.movie-backdrop):not(.movie-backdrop-fade) { position: relative; z-index: 2; }
@@ -258,12 +261,12 @@ body {
 .movie-top {
   display: flex;
   gap: 0;
-  min-height: 420px;
+  min-height: 560px;
 }
 
 .poster-col {
   flex-shrink: 0;
-  width: 340px;
+  width: 360px;
   position: relative;
   overflow: hidden;
   border-radius: 12px;
@@ -977,9 +980,6 @@ body {
 body.tv-mode {
   zoom: 1.35;
 }
-body.tv-mode #sidebar { zoom: calc(1 / 1.35); width: 175px; }
-body.tv-mode { padding-left: calc(175px + 24px); }
-body.tv-mode #trailerModal { zoom: 1; }
 body.tv-mode #trailerModal {
   zoom: 1;
 }
@@ -1077,131 +1077,44 @@ body.tv-mode .trailer-btn.sn-focused {
   #scrollTopBtn { width: 56px !important; height: 56px !important; font-size: 26px !important; }
 }
 
-/* ══ SIDEBAR ══════════════════════════════════ */
-#sidebar {
-  position: fixed;
-  left: 0; top: 0; bottom: 0;
-  width: 175px;
-  background: var(--bg1);
-  border-right: 1px solid var(--border);
-  display: flex; flex-direction: column;
-  z-index: 500;
-  overflow-y: auto; overflow-x: hidden;
-}
-#sidebar::-webkit-scrollbar { width: 0; }
-
-#sidebarLogo {
-  display: flex; align-items: center; gap: 9px;
-  padding: 16px 14px 12px;
-  cursor: pointer;
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-  background: none; border-left: none; border-right: none; border-top: none;
-  color: var(--t1); text-align: left; width: 100%;
-}
-#sidebarLogo:hover { background: var(--bg3); }
-#sidebarLogo .sb-logo-emoji { font-size: 20px; line-height: 1; flex-shrink: 0; }
-#sidebarLogo .sb-logo-text {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 20px; letter-spacing: .05em; line-height: 1;
-}
-
-.sb-section {
-  font-size: 9px; font-family: 'DM Mono', monospace;
-  color: var(--t3); letter-spacing: .12em; text-transform: uppercase;
-  padding: 10px 14px 2px; flex-shrink: 0;
-}
-
-.sb-btn {
-  display: flex; align-items: center; gap: 10px;
-  width: 100%; padding: 8px 14px;
-  background: none; border: none;
-  color: var(--t2); cursor: pointer;
-  font-family: 'DM Sans', Arial, sans-serif; font-size: 13px; font-weight: 500;
-  text-align: left; transition: all .13s var(--ease);
-  white-space: nowrap; box-sizing: border-box; flex-shrink: 0;
-  line-height: 1.2;
-}
-.sb-btn:hover { background: var(--bg3); color: var(--t1); }
-.sb-btn.active { background: var(--acc-lo); color: var(--accent); }
-.sb-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
-.sb-btn img { width: 15px; height: 15px; flex-shrink: 0; border-radius: 3px; object-fit: cover; }
-
-.sb-divider { height: 1px; background: var(--border); margin: 5px 14px; flex-shrink: 0; }
-
-#sbLoginArea {
-  margin-top: auto;
-  border-top: 1px solid var(--border);
-  flex-shrink: 0;
-}
-#sbLoginBtn {
-  display: flex; align-items: center; gap: 10px;
-  width: 100%; padding: 11px 14px;
-  background: none; border: none;
-  color: var(--t2); cursor: pointer;
-  font-family: 'DM Sans', Arial, sans-serif; font-size: 13px; font-weight: 500;
-  text-align: left; transition: all .13s;
-  line-height: 1.2;
-}
-#sbLoginBtn:hover { background: var(--bg3); color: var(--t1); }
-#sbLoginAvatar { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; display: none; flex-shrink: 0; }
-#sbLoginBtn svg { flex-shrink: 0; width: 15px; height: 15px; }
-
-/* Search integrado */
-.search-new {
+/* ── NUEVA BÚSQUEDA INTEGRADA ───────── */
+.search-row-new {
   display: flex; align-items: center;
   background: var(--bg2); border: 1.5px solid var(--border2);
-  border-radius: 22px; overflow: hidden;
-  margin-bottom: 12px; height: 42px;
+  border-radius: 24px; overflow: hidden;
+  margin-bottom: 20px; height: 46px;
   transition: border-color .15s, box-shadow .15s;
 }
-.search-new:focus-within {
+.search-row-new:focus-within {
   border-color: var(--accent); box-shadow: 0 0 0 3px var(--acc-lo);
 }
-.search-new #q {
+.search-row-new input#q {
   flex: 1; background: transparent; border: none;
-  color: var(--t1); padding: 0 14px;
-  font-family: 'DM Sans', sans-serif; font-size: 14px;
+  color: var(--t1); padding: 0 18px;
+  font-family: 'DM Sans', sans-serif; font-size: 15px;
   outline: none; height: 100%;
 }
-.search-new #q::placeholder { color: var(--t3); }
-.search-new .sn-div {
-  width: 1px; height: 18px; background: var(--border2); flex-shrink: 0;
+.search-row-new input#q::placeholder { color: var(--t3); }
+.search-row-new .s-divider {
+  width: 1px; height: 20px; background: var(--border2); flex-shrink: 0;
 }
-.search-new #yearFilter {
+.search-row-new input#yearFilter {
   background: transparent; border: none;
-  color: var(--t2); padding: 0 10px;
-  font-family: 'DM Sans', sans-serif; font-size: 13px;
-  outline: none; width: 62px; height: 100%;
+  color: var(--t2); padding: 0 12px;
+  font-family: 'DM Sans', sans-serif; font-size: 14px;
+  outline: none; width: 72px; height: 100%;
   -moz-appearance: textfield;
 }
-.search-new #yearFilter::placeholder { color: var(--t3); }
-.search-new #yearFilter::-webkit-inner-spin-button,
-.search-new #yearFilter::-webkit-outer-spin-button { -webkit-appearance: none; }
-.search-new #go {
+.search-row-new input#yearFilter::placeholder { color: var(--t3); }
+.search-row-new input#yearFilter::-webkit-inner-spin-button,
+.search-row-new input#yearFilter::-webkit-outer-spin-button { -webkit-appearance: none; }
+.search-row-new button#go {
   background: none; border: none; color: var(--t2);
-  padding: 0 13px; cursor: pointer; height: 100%;
+  padding: 0 16px; cursor: pointer; height: 100%;
   display: flex; align-items: center;
   transition: color .13s; flex-shrink: 0;
 }
-.search-new #go:hover { color: var(--accent); }
-
-/* Genre chips */
-.genre-chips {
-  display: flex; gap: 6px; flex-wrap: nowrap;
-  overflow-x: auto; margin-bottom: 14px;
-  scrollbar-width: none; align-items: center;
-}
-.genre-chips::-webkit-scrollbar { display: none; }
-.genre-chip {
-  flex-shrink: 0; background: var(--bg3); border: 1px solid var(--border2);
-  border-radius: 18px; color: var(--t2);
-  padding: 4px 12px; font-size: 12px; font-weight: 500;
-  font-family: 'DM Sans', sans-serif;
-  cursor: pointer; transition: all .13s var(--ease); white-space: nowrap;
-}
-.genre-chip:hover { background: var(--bg4); color: var(--t1); }
-.genre-chip.active { background: var(--t1); color: var(--bg); border-color: var(--t1); }
+.search-row-new button#go:hover { color: var(--accent); }
 </style>
 <!-- Firebase -->
 <script type="module">
@@ -1237,7 +1150,7 @@ window._fbSignOut  = () => signOut(auth);
 
 onAuthStateChanged(auth, async (user) => {
   window._fbUser = user || null;
-  const btn = document.getElementById('sbLoginBtn');
+  const btn = document.getElementById('loginBtn');
   const avatar = document.getElementById('loginAvatar');
   if (user) {
     if (btn) btn.title = `Cerrar sesión (${user.displayName})`;
@@ -1281,121 +1194,85 @@ onAuthStateChanged(auth, async (user) => {
 </script>
 </head>
 <body>
-  <!-- SIDEBAR -->
-  <nav id="sidebar">
-    <button id="sidebarLogo" onclick="showHome()">
-      <span class="sb-logo-emoji">🎬</span>
-      <span class="sb-logo-text">MOVARA</span>
-    </button>
-
-    <div class="sb-section">Navegación</div>
-    <button id="sbBackBtn" class="sb-btn" onclick="goBack()" style="display:none;">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
-      Volver
-    </button>
-    <button id="homeBtn" class="sb-btn" onclick="showHome()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      Inicio
-    </button>
-    <button id="favsBtn" class="sb-btn" onclick="showFavorites()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-      Favoritos
-    </button>
-    <button id="historialBtn" class="sb-btn" onclick="showHistorial()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      Historial
-    </button>
-    <button class="sb-btn" onclick="setHomeType('categories');showHome()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-      Categorías
-    </button>
-
-    <div class="sb-divider"></div>
-    <div class="sb-section">Explorar</div>
-    <button class="sb-btn" onclick="browseByTag('type','movie','Películas')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="2" y="2" width="20" height="20" rx="2"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
-      Películas
-    </button>
-    <button class="sb-btn" onclick="browseByTag('type','tv','Series')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/></svg>
-      Series
-    </button>
-    <button class="sb-btn" onclick="browseByTag('anime','anime','Anime')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
-      Anime
-    </button>
-
-    <div class="sb-divider"></div>
-    <div class="sb-section">Plataformas</div>
-    <button class="sb-btn" onclick="browseByTag('provider','8','Netflix')">
-      <img src="https://www.google.com/s2/favicons?sz=64&domain=netflix.com">Netflix
-    </button>
-    <button class="sb-btn" onclick="browseByTag('provider','119','Prime Video')">
-      <img src="https://www.google.com/s2/favicons?sz=64&domain=primevideo.com">Prime Video
-    </button>
-    <button class="sb-btn" onclick="browseByTag('provider','337','Disney+')">
-      <img src="https://www.google.com/s2/favicons?sz=64&domain=disneyplus.com">Disney+
-    </button>
-    <button class="sb-btn" onclick="browseByTag('provider','1899','Max')">
-      <img src="https://www.google.com/s2/favicons?sz=64&domain=max.com">Max
-    </button>
-    <button class="sb-btn" onclick="browseByTag('provider','350','Apple TV+')">
-      <img src="https://www.google.com/s2/favicons?sz=64&domain=tv.apple.com">Apple TV+
-    </button>
-    <button class="sb-btn" onclick="browseByTag('provider','531','Paramount+')">
-      <img src="https://www.google.com/s2/favicons?sz=64&domain=paramountplus.com">Paramount+
-    </button>
-    <button class="sb-btn" onclick="browseByTag('provider','283','Crunchyroll')">
-      <img src="https://www.google.com/s2/favicons?sz=64&domain=crunchyroll.com">Crunchyroll
-    </button>
-
-    <div class="sb-divider"></div>
-    <button id="tvModeBtn" class="sb-btn" onclick="toggleTvMode()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/><circle cx="12" cy="10" r="2" fill="currentColor" stroke="none"/></svg>
-      <span id="tvModeBtnLabel">Modo TV</span>
-    </button>
-
-    <div id="sbLoginArea">
-      <button id="sbLoginBtn" onclick="handleLogin()">
-        <img id="sbLoginAvatar" src="">
-        <svg id="sbLoginIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        <span id="sbLoginLabel">Entrar</span>
-      </button>
-    </div>
-
-    <!-- Hidden compat buttons -->
-    <button id="loginBtn" onclick="handleLogin()" style="display:none;"><img id="loginAvatar" src=""><span>Entrar</span></button>
-    <button class="btn-platforms" id="togglePanel" style="display:none;">Plataformas</button>
-  </nav>
 <div class="wrap">
 
   <!-- HEADER -->
+  <div class="site-header">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:48px;letter-spacing:.1em;color:#fff;line-height:1;margin-bottom:4px;">
+      🎬 MOVARA
+    </div>
+  </div>
 
-  <!-- SEARCH + CHIPS fuera del container -->
-  <div class="search-new">
-    <input id="q" placeholder="Película o serie…" autocomplete="off" onkeydown="if(event.key==='Enter')search()">
-    <div class="sn-div"></div>
-    <input id="yearFilter" type="number" min="1900" max="2030" placeholder="Año" onkeydown="if(event.key==='Enter')search()">
+  <!-- NAV BUTTONS -->
+  <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;">
+    <button id="backBtn" onclick="goBack()" style="
+      display:none;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;
+      color:var(--t2);padding:10px 18px;font-family:'DM Sans',sans-serif;font-size:13px;
+      font-weight:500;cursor:pointer;transition:all .13s;align-items:center;gap:7px;
+    ">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Volver
+    </button>
+    <button id="homeBtn" onclick="showHome()" style="
+      background:var(--bg3);border:1px solid var(--border2);border-radius:10px;
+      color:var(--t2);padding:10px 18px;font-family:'DM Sans',sans-serif;font-size:13px;
+      font-weight:500;cursor:pointer;transition:all .13s;display:flex;align-items:center;gap:7px;
+    ">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Inicio
+    </button>
+    <button id="favsBtn" onclick="showFavorites()" style="
+      background:var(--bg3);border:1px solid var(--border2);border-radius:10px;
+      color:var(--t2);padding:10px 18px;font-family:'DM Sans',sans-serif;font-size:13px;
+      font-weight:500;cursor:pointer;transition:all .13s;display:flex;align-items:center;gap:7px;
+    ">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      Favoritos
+    </button>
+    <button id="historialBtn" onclick="showHistorial()" style="
+      background:var(--bg3);border:1px solid var(--border2);border-radius:10px;
+      color:var(--t2);padding:10px 18px;font-family:'DM Sans',sans-serif;font-size:13px;
+      font-weight:500;cursor:pointer;transition:all .13s;display:flex;align-items:center;gap:7px;
+    ">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Historial
+    </button>
+    <button id="tvModeBtn" onclick="toggleTvMode()" title="Modo TV" style="
+      background:var(--bg3);border:1px solid var(--border2);border-radius:10px;
+      color:var(--t2);padding:10px 18px;font-family:'DM Sans',sans-serif;font-size:13px;
+      font-weight:500;cursor:pointer;transition:all .13s;display:flex;align-items:center;gap:7px;
+    ">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/>
+        <circle cx="12" cy="10" r="2" fill="currentColor" stroke="none"/>
+      </svg>
+      <span id="tvModeBtnLabel">Modo TV</span>
+    </button>
+    <button id="loginBtn" onclick="handleLogin()" title="Iniciá sesión con Google para sincronizar tus favoritos entre todos tus dispositivos" style="
+      background:var(--bg3);border:1px solid var(--border2);border-radius:10px;
+      color:var(--t2);padding:10px 18px;font-family:'DM Sans',sans-serif;font-size:13px;
+      font-weight:500;cursor:pointer;transition:all .13s;display:flex;align-items:center;gap:7px;margin-left:auto;
+    ">
+      <img id="loginAvatar" src="" style="width:20px;height:20px;border-radius:50%;display:none;object-fit:cover;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>Entrar</span>
+    </button>
+    <!-- togglePanel oculto para mantener compatibilidad -->
+    <button class="btn-platforms" id="togglePanel" style="display:none;"></button>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="search-row-new">
+    <input id="q" placeholder="Película o serie…" autocomplete="off"
+      onkeydown="if(event.key==='Enter')search()">
+    <div class="s-divider"></div>
+    <input id="yearFilter" type="number" min="1900" max="2030" placeholder="Año"
+      onkeydown="if(event.key==='Enter')search()">
     <button id="go" onclick="search()">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     </button>
   </div>
-  <div class="autocomplete-list" id="acList" style="display:none;position:relative;z-index:100;margin-top:-8px;margin-bottom:8px;"></div>
-  <div class="genre-chips" id="genreChipsBar">
-    <button class="genre-chip active" onclick="genreChipClick(this,'all')">Todo</button>
-    <button class="genre-chip" onclick="genreChipClick(this,'28')">💥 Acción</button>
-    <button class="genre-chip" onclick="genreChipClick(this,'35')">😂 Comedia</button>
-    <button class="genre-chip" onclick="genreChipClick(this,'18')">🎭 Drama</button>
-    <button class="genre-chip" onclick="genreChipClick(this,'27')">👻 Terror</button>
-    <button class="genre-chip" onclick="genreChipClick(this,'878')">🚀 Sci-Fi</button>
-    <button class="genre-chip" onclick="genreChipClick(this,'53')">🔍 Suspenso</button>
-    <button class="genre-chip" onclick="genreChipClick(this,'10749')">❤️ Romance</button>
-    <button class="genre-chip" onclick="genreChipClick(this,'all-cats')">＋ Categorías</button>
-    <button class="sort-btn surprise-btn" onclick="surpriseMe()" style="margin-left:auto;background:linear-gradient(135deg,#7c3aed,#db2777);border-color:transparent;color:#fff;padding:5px 14px;font-size:12px;flex-shrink:0;border-radius:18px;">
-      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-      <span>Sorpréndeme</span>
-    </button>
-  </div>
+  <div class="autocomplete-list" id="acList" style="display:none;margin-top:4px;margin-bottom:8px;"></div>
 
   <!-- PLATFORMS PANEL -->
   <div class="platforms-panel" id="platformsPanel">
@@ -1457,6 +1334,7 @@ const DEFAULT_PLATFORMS = [
   { name:"Max",          domain:"max.com",           url:"https://www.max.com/search?q={q}",                          unofficial:false },
   { name:"Apple TV+",    domain:"tv.apple.com",      url:"https://tv.apple.com/search?term={q}",                      unofficial:false },
   { name:"Paramount+",   domain:"paramountplus.com",  url:"https://www.paramountplus.com/search/{q}/",                unofficial:false },
+  { name:"Crunchyroll",  domain:"crunchyroll.com",   url:"https://www.crunchyroll.com/search?q={q}",                unofficial:false },
   { name:"PelisFlix",    domain:"pelisflix1.homes",  url:"https://pelisflix1.homes/?s={q}",                           unofficial:true  },
   { name:"Cuevana",      domain:"cuevana.bi",        url:"https://cuevana.bi/explorar?s={q}",                                 unofficial:true  },
   { name:"HDFull",       domain:"hdfull.org",        url:"https://hdfull.org/{type}/{slug}",                         unofficial:true  },
@@ -1473,7 +1351,6 @@ const JW_PROVIDERS = {
   337: "disneyplus.com",
   1899:"max.com",
   2:   "primevideo.com",
-  283: "crunchyroll.com",
 };
 
 // ═══════════════════════════════════════════════
@@ -1692,7 +1569,7 @@ async function loadTrailer(movieId, movieTitle, backdropPath) {
       iframeEl.style.cssText = 'position:absolute;top:50%;left:60%;width:200%;height:200%;transform:translate(-50%,-50%);border:none;pointer-events:none;opacity:0;transition:opacity 1.8s ease;';
       iframeEl.allow = 'autoplay; encrypted-media';
       bdEl.appendChild(iframeEl);
-      setTimeout(() => { const el = document.getElementById('trailerBgIframe'); if (el) el.style.opacity = '1'; }, 2500);
+      setTimeout(() => { const el = document.getElementById('trailerBgIframe'); if (el) el.style.opacity = '1'; }, 1500);
     }
     const eyeBtn = document.getElementById('trailerBgBtn');
     if (eyeBtn) eyeBtn.style.display = 'flex';
@@ -2637,7 +2514,7 @@ async function surpriseMe() {
               };
             }, 300);
           }, 1300);
-        }, 2500);
+        }, 1500);
       } catch(err) { console.error(err); }
     });
 
@@ -2693,7 +2570,7 @@ async function surpriseMe() {
         si2++;
       }, 450);
       slideIntervals.push(slowSlide);
-    }, 2500);
+    }, 1500);
 
     // 3.8s: show chosen as final + reveal panel
     setTimeout(() => {
@@ -2802,7 +2679,7 @@ function renderResultPlatforms(title) {
     .trim().replace(/\s+/g, '-');
   const type = currentMediaType === 'tv' ? 'serie' : 'pelicula';
 
-  const legalDomains = new Set(['netflix.com','primevideo.com','disneyplus.com','max.com','tv.apple.com','paramountplus.com','starplus.com','movistarplus.es','clarovideo.com']);
+  const legalDomains = new Set(['netflix.com','primevideo.com','disneyplus.com','max.com','tv.apple.com','paramountplus.com','starplus.com','movistarplus.es','clarovideo.com','crunchyroll.com']);
   const unofficialDomains = new Set(['pelisflix1.homes','cuevana.bi','hdfull.org','pelisplushd.ms','pelispedia.mov','seriesflixhd.shop']);
   const legalPlatforms = platforms.filter(p => legalDomains.has(p.domain));
   const unofficialPlatforms = platforms.filter(p => unofficialDomains.has(p.domain));
@@ -3169,7 +3046,7 @@ function updateFavBtn(id) {
 
 function showHistorial() {
   const container = document.getElementById('container');
-  document.getElementById('sbBackBtn').style.display = 'flex';
+  const _bb = document.getElementById('backBtn'); if(_bb){_bb.style.display='flex';};
   const hist = getHistorial();
 
   // Dedupe by id+type, keep most recent, ordered by date desc
@@ -3266,7 +3143,7 @@ async function toggleMarkWatched() {
 
 function showFavorites() {
   const container = document.getElementById('container');
-  document.getElementById('sbBackBtn').style.display = 'none';
+  const _bb2 = document.getElementById('backBtn'); if(_bb2){_bb2.style.display='none';};
   document.getElementById('q').value = '';
   const favs = getFavorites();
   const isLogged = !!window._fbUser;
@@ -3339,41 +3216,31 @@ let browseSort = 'popularity';
 let browsePage = 1;
 
 // ── showHome ──────────────────────────────────────────────
-
-function genreChipClick(btn, mode) {
-  document.querySelectorAll('.genre-chip').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  if (mode === 'all') { showHome(false); return; }
-  if (mode === 'all-cats') {
-    const c = document.getElementById('container');
-    c.innerHTML = '<div class="browse-grid" id="browseGrid"></div>';
-    renderCategoriesGrid(document.getElementById('browseGrid'));
-    return;
-  }
-  const names = {'28':'Acción','35':'Comedia','18':'Drama','27':'Terror','878':'Sci-Fi','53':'Suspenso','10749':'Romance'};
-  browseByTag('genre', mode, names[mode] || mode);
-}
 async function showHome(pushNav = true) {
   homeType = 'home';
   const container = document.getElementById('container');
-  document.getElementById('sbBackBtn').style.display = 'none';
+  const _bb2 = document.getElementById('backBtn'); if(_bb2){_bb2.style.display='none';};
   document.getElementById('q').value = '';
   browseState = null;
   document.title = 'Movara';
   if (pushNav) pushHistory({ type: 'home' });
   container.innerHTML = `
   <div class="home-section">
-    <div class="home-controls" style="display:none;">
-      <button class="home-tab" id="tabMovie" onclick="setHomeType('movie')" style="display:none;"></button>
-      <button class="home-tab" id="tabTv" onclick="setHomeType('tv')" style="display:none;"></button>
-      <button class="home-tab" id="tabCategories" onclick="setHomeType('categories')" style="display:none;"></button>
+    <div class="home-controls">
+      <button class="home-tab" id="tabMovie" onclick="setHomeType('movie')">🎬 Películas</button>
+      <button class="home-tab" id="tabTv" onclick="setHomeType('tv')">📺 Series</button>
+      <button class="home-tab" id="tabCategories" onclick="setHomeType('categories')">🎭 Categorías</button>
+      <button class="sort-btn surprise-btn" onclick="surpriseMe()" title="Sorpréndeme" style="margin-left:auto;background:linear-gradient(135deg,#7c3aed,#db2777);border-color:transparent;color:#fff;padding:10px 22px;font-size:13px;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <span>Sorpréndeme</span>
+      </button>
       <button class="sort-btn" id="sortBtn" onclick="toggleHomeSort()" style="display:none;">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="14" y2="12"/><line x1="4" y1="18" x2="9" y2="18"/></svg>
         <span id="sortLabel">Más recientes</span>
       </button>
     </div>
 
-    <div class="tags-row" id="platformsRow" style="display:none;">
+    <div class="tags-row" id="platformsRow" style="margin-top:14px;">
       <button class="platform-logo-btn" onclick="browseByTag('provider','8','Netflix')" title="Netflix">
         <img src="https://play-lh.googleusercontent.com/TBRwjS_qfJCSj1m7zZB93FnpJM5fSpMA_wUlFDLxWAb45T9RmwBvQd5cWR5viJJOhkI=w240-h480-rw" alt="Netflix">
       </button>
@@ -3389,6 +3256,9 @@ async function showHome(pushNav = true) {
       </button>
       <button class="platform-logo-btn" onclick="browseByTag('provider','531','Paramount+')" title="Paramount+">
         <img src="https://play-lh.googleusercontent.com/NMldcfWpw42-kIyzKuza9P80MLZo9wHyui3iqrzN_MaceeYLaSfE2djE-uu5nm2rHbk=w240-h480-rw" alt="Paramount+">
+      </button>
+      <button class="platform-logo-btn" onclick="browseByTag('anime','anime','Crunchyroll')" title="Crunchyroll">
+        <img src="https://www.google.com/s2/favicons?sz=128&domain=crunchyroll.com" alt="Crunchyroll" style="border-radius:8px;">
       </button>
     </div>
 
@@ -3506,7 +3376,7 @@ function browseByTag(mode, value, label) {
   browseSort = 'popularity';
   browsePage = 1;
   const container = document.getElementById('container');
-  document.getElementById('sbBackBtn').style.display = 'flex';
+  const _bb = document.getElementById('backBtn'); if(_bb){_bb.style.display='flex';};
   container.innerHTML = `
   <div class="home-section">
     <div class="tag-browse-header">
@@ -3566,14 +3436,15 @@ async function loadBrowseGrid(append = false) {
       renderBrowseGrid(grid, results, null, 'browseShowMore2');
       return;
     }
+    // Anime mode: fetch movie+tv con genre=16 y keyword=210024
     if (mode === 'anime') {
       const [rm, rt] = await Promise.all([
         fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_KEY}&language=es-ES&with_genres=16&with_keywords=210024&sort_by=popularity.desc&page=${browsePage}`).then(r=>r.json()),
         fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_KEY}&language=es-ES&with_genres=16&with_keywords=210024&sort_by=popularity.desc&page=${browsePage}`).then(r=>r.json()),
       ]);
-      const res = [...(rm.results||[]).map(x=>({...x,_mt:'movie'})),...(rt.results||[]).map(x=>({...x,_mt:'tv'}))].filter(x=>x.poster_path).sort((a,b)=>(b.popularity||0)-(a.popularity||0));
+      const results = [...(rm.results||[]).map(x=>({...x,_mt:'movie'})),...(rt.results||[]).map(x=>({...x,_mt:'tv'}))].filter(x=>x.poster_path).sort((a,b)=>(b.popularity||0)-(a.popularity||0));
       if (!append) grid.innerHTML = '';
-      renderBrowseGrid(grid, res, null, 'browseShowMore2');
+      renderBrowseGrid(grid, results, null, 'browseShowMore2');
       return;
     }
     // genre, year, type modes — fetch movie+tv
@@ -3821,14 +3692,14 @@ function pushHistory(entry) {
   const last = navHistory[navHistory.length - 1];
   if (last && JSON.stringify(last) === JSON.stringify(entry)) return;
   navHistory.push(entry);
-  document.getElementById('sbBackBtn').style.display = navHistory.length > 1 ? 'inline-flex' : 'none';
+  document.getElementById('backBtn').style.display = navHistory.length > 1 ? 'inline-flex' : 'none';
 }
 
 function goBack() {
   navHistory.pop();
   const prev = navHistory[navHistory.length - 1];
   if (!prev) {
-    document.getElementById('sbBackBtn').style.display = 'none';
+    const _bb2 = document.getElementById('backBtn'); if(_bb2){_bb2.style.display='none';};
     showHome(false);
     return;
   }
@@ -3904,8 +3775,7 @@ function applyTvMode() {
 // ── FOCUSABLE SELECTOR ──────────────────────────
 function getFocusables() {
   const sel = [
-    '#sidebarLogo','#sbBackBtn','#homeBtn','#favsBtn','#historialBtn','#tvModeBtn','#sbLoginBtn',
-    '.sb-btn','.genre-chip',
+    '#homeBtn','#favsBtn','#historialBtn','#togglePanel','#tvModeBtn','#loginBtn',
     '.home-tab:not([style*="display:none"])',
     '.sort-btn:not([style*="display:none"])',
     '.surprise-btn',
@@ -4040,7 +3910,7 @@ function _snKeyHandler(e) {
     case 'Backspace':
     case 'BrowserBack':
       e.preventDefault();
-      const backBtn = document.getElementById('sbBackBtn');
+      const backBtn = document.getElementById('backBtn');
       if (backBtn && backBtn.style.display !== 'none') backBtn.click();
       break;
   }

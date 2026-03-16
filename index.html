@@ -1115,6 +1115,57 @@ body.tv-mode .trailer-btn.sn-focused {
   transition: color .13s; flex-shrink: 0;
 }
 .search-row-new button#go:hover { color: var(--accent); }
+/* ── BADGE NOVEDAD EN PORTADA ─────────────────── */
+.browse-card { position: relative; }
+.card-new-badge {
+  position: absolute; top: 7px; right: 7px;
+  width: 12px; height: 12px; border-radius: 50%;
+  background: #e50914; border: 2px solid var(--bg);
+  z-index: 10; animation: pulseBadge 2s infinite;
+}
+@keyframes pulseBadge {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.25); opacity: .8; }
+}
+
+/* ── TOOLTIPS CUSTOM ─────────────────────────────── */
+.tip {
+  position: relative;
+}
+.tip::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: var(--bg4);
+  color: var(--t1);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  padding: 5px 10px;
+  border-radius: 7px;
+  border: 1px solid var(--border2);
+  box-shadow: 0 4px 12px rgba(0,0,0,.4);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .15s, transform .15s;
+  z-index: 9999;
+}
+.tip:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+/* Para tooltips que van hacia abajo (sidebar items) */
+.tip-down::after {
+  bottom: auto;
+  top: calc(100% + 8px);
+  transform: translateX(-50%) translateY(-4px);
+}
+.tip-down:hover::after {
+  transform: translateX(-50%) translateY(0);
+}
 </style>
 <!-- Firebase -->
 <script type="module">
@@ -1204,8 +1255,8 @@ onAuthStateChanged(auth, async (user) => {
   </div>
 
   <!-- NAV BUTTONS -->
-  <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;">
-    <button id="backBtn" onclick="goBack()" style="
+  <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;position:relative;">
+    <button id="backBtn" onclick="goBack()" class="tip" data-tip="Volver a la pantalla anterior" style="
       display:none;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;
       color:var(--t2);padding:10px 18px;font-family:'DM Sans',sans-serif;font-size:13px;
       font-weight:500;cursor:pointer;transition:all .13s;align-items:center;gap:7px;
@@ -1213,7 +1264,7 @@ onAuthStateChanged(auth, async (user) => {
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
       Volver
     </button>
-    <button id="homeBtn" onclick="showHome()" style="
+    <button id="homeBtn" onclick="showHome()" class="tip" data-tip="Ir al inicio — Estrenos y tendencias" style="
       background:var(--bg3);border:1px solid var(--border2);border-radius:10px;
       color:var(--t2);padding:10px 18px;font-family:'DM Sans',sans-serif;font-size:13px;
       font-weight:500;cursor:pointer;transition:all .13s;display:flex;align-items:center;gap:7px;
@@ -1221,7 +1272,16 @@ onAuthStateChanged(auth, async (user) => {
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       Inicio
     </button>
-    <button id="favsBtn" onclick="showFavorites()" style="
+    <button id="continueBtn" onclick="showContinueWatching()" class="tip" data-tip="Series y películas que dejaste a medias" style="
+      background:var(--bg3);border:1px solid var(--border2);border-radius:10px;
+      color:var(--t2);padding:10px 18px;font-family:'DM Sans',sans-serif;font-size:13px;
+      font-weight:500;cursor:pointer;transition:all .13s;display:flex;align-items:center;gap:7px;position:relative;
+    ">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      Continuar
+      <span id="continueBadge" style="display:none;position:absolute;top:-5px;right:-5px;background:#e50914;color:#fff;font-size:9px;font-weight:700;border-radius:50%;width:16px;height:16px;display:none;align-items:center;justify-content:center;"></span>
+    </button>
+    <button id="favsBtn" onclick="showFavorites()" class="tip" data-tip="Tus favoritos — también activa alertas de novedades" style="
       background:var(--bg3);border:1px solid var(--border2);border-radius:10px;
       color:var(--t2);padding:10px 18px;font-family:'DM Sans',sans-serif;font-size:13px;
       font-weight:500;cursor:pointer;transition:all .13s;display:flex;align-items:center;gap:7px;
@@ -1229,7 +1289,7 @@ onAuthStateChanged(auth, async (user) => {
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
       Favoritos
     </button>
-    <button id="historialBtn" onclick="showHistorial()" style="
+    <button id="historialBtn" onclick="showHistorial()" class="tip" data-tip="Todo lo que viste ordenado por fecha" style="
       background:var(--bg3);border:1px solid var(--border2);border-radius:10px;
       color:var(--t2);padding:10px 18px;font-family:'DM Sans',sans-serif;font-size:13px;
       font-weight:500;cursor:pointer;transition:all .13s;display:flex;align-items:center;gap:7px;
@@ -1237,7 +1297,7 @@ onAuthStateChanged(auth, async (user) => {
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
       Historial
     </button>
-    <button id="tvModeBtn" onclick="toggleTvMode()" title="Modo TV" style="
+    <button id="tvModeBtn" onclick="toggleTvMode()" class="tip" data-tip="Activa la navegación con control remoto o teclado" style="
       background:var(--bg3);border:1px solid var(--border2);border-radius:10px;
       color:var(--t2);padding:10px 18px;font-family:'DM Sans',sans-serif;font-size:13px;
       font-weight:500;cursor:pointer;transition:all .13s;display:flex;align-items:center;gap:7px;
@@ -1248,10 +1308,39 @@ onAuthStateChanged(auth, async (user) => {
       </svg>
       <span id="tvModeBtnLabel">Modo TV</span>
     </button>
+    <button id="notifBtn" onclick="toggleNotifPanel()" class="tip" data-tip="Novedades — películas y episodios nuevos en Movara" style="
+      background:var(--bg3);border:1px solid var(--border2);border-radius:10px;
+      color:var(--t2);padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:13px;
+      font-weight:500;cursor:pointer;transition:all .13s;display:flex;align-items:center;gap:7px;
+      margin-left:auto;position:relative;
+    ">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span id="notifBadge" style="display:none;position:absolute;top:-4px;right:-4px;background:#e50914;color:#fff;font-size:9px;font-weight:700;border-radius:50%;min-width:16px;height:16px;padding:0 3px;align-items:center;justify-content:center;"></span>
+    </button>
+
+    <!-- Panel de notificaciones -->
+    <div id="notifPanel" style="display:none;position:absolute;top:calc(100% + 8px);right:0;width:340px;background:var(--bg2);border:1px solid var(--border2);border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.6);z-index:999;overflow:hidden;">
+      <div style="padding:14px 16px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+        <span style="font-weight:700;font-size:14px;">Novedades en Movara</span>
+        <button onclick="clearNotifs()" style="background:none;border:none;color:var(--t3);font-size:11px;cursor:pointer;padding:2px 6px;border-radius:6px;" onmouseover="this.style.color='var(--t1)'" onmouseout="this.style.color='var(--t3)'">Marcar todo como leído</button>
+      </div>
+      <div id="notifList" style="max-height:400px;overflow-y:auto;padding:8px 0;">
+        <div id="notifEmpty" style="text-align:center;padding:32px 16px;color:var(--t3);font-size:13px;">
+          <div style="font-size:28px;margin-bottom:8px;">🔔</div>
+          Revisando novedades…
+        </div>
+      </div>
+      <div style="padding:10px 16px;border-top:1px solid var(--border);background:var(--bg3);">
+        <div style="font-size:10px;color:var(--t2);line-height:1.4;">
+          ⏱️ El catálogo de Vimeus se actualiza periódicamente. La aparición de nuevo contenido puede demorar algunas horas desde su estreno.
+        </div>
+      </div>
+    </div>
+
     <button id="loginBtn" onclick="handleLogin()" title="Iniciá sesión con Google para sincronizar tus favoritos entre todos tus dispositivos" style="
       background:var(--bg3);border:1px solid var(--border2);border-radius:10px;
       color:var(--t2);padding:10px 18px;font-family:'DM Sans',sans-serif;font-size:13px;
-      font-weight:500;cursor:pointer;transition:all .13s;display:flex;align-items:center;gap:7px;margin-left:auto;
+      font-weight:500;cursor:pointer;transition:all .13s;display:flex;align-items:center;gap:7px;
     ">
       <img id="loginAvatar" src="" style="width:20px;height:20px;border-radius:50%;display:none;object-fit:cover;">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -1262,17 +1351,19 @@ onAuthStateChanged(auth, async (user) => {
   </div>
 
   <!-- SEARCH -->
-  <div class="search-row-new">
-    <input id="q" placeholder="Película o serie…" autocomplete="off"
-      onkeydown="if(event.key==='Enter')search()">
-    <div class="s-divider"></div>
-    <input id="yearFilter" type="number" min="1900" max="2030" placeholder="Año"
-      onkeydown="if(event.key==='Enter')search()">
-    <button id="go" onclick="search()">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    </button>
+  <div style="position:relative;margin-bottom:8px;">
+    <div class="search-row-new">
+      <input id="q" placeholder="Película o serie…" autocomplete="off"
+        onkeydown="if(event.key==='Enter')search()">
+      <div class="s-divider"></div>
+      <input id="yearFilter" type="number" min="1900" max="2030" placeholder="Año"
+        onkeydown="if(event.key==='Enter')search()">
+      <button id="go" onclick="search()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+    </div>
+    <div class="autocomplete-list" id="acList" style="display:none;"></div>
   </div>
-  <div class="autocomplete-list" id="acList" style="display:none;margin-top:4px;margin-bottom:8px;"></div>
 
   <!-- PLATFORMS PANEL -->
   <div class="platforms-panel" id="platformsPanel">
@@ -1538,6 +1629,13 @@ function openVimeusPlayer() {
   const type = currentDetailType === 'tv' ? 'serie' : 'movie';
   const url = `https://vimeus.com/e/${type}?tmdb=${currentDetailId}&view_key=${VIMEUS_KEY}&theme=cosmic&loader=v3&font=v3&overlay=v5&playUI=v3&splash=v3`;
   openEpisodePlayer(url, currentDetailTitle || '', 'Vimeus');
+  // Si es película, guardar en continuar viendo
+  if (currentDetailType !== 'tv') {
+    addToContinue({
+      id: currentDetailId, title: currentDetailTitle,
+      poster: currentDetailPoster, type: 'movie', year: currentDetailYear
+    });
+  }
 }
 
 function openEpisodePlayer(url, title, platform) {
@@ -1915,6 +2013,13 @@ async function toggleSeason(tvId, seasonNum, clickedCard, histMode) {
             const vimeusUrl = `https://vimeus.com/e/serie?tmdb=${currentDetailId}&se=${seasonNum}&ep=${epNum}&view_key=${VIMEUS_KEY}&theme=cosmic&loader=v3&font=v3&overlay=v5&playUI=v3&splash=v3`;
             openEpisodePlayer(vimeusUrl, `${currentDetailTitle} — T${seasonNum}E${epNum}`, 'Vimeus');
           }
+          // Guardar en Continuar viendo
+          addToContinue({
+            id: currentDetailId, title: currentDetailTitle,
+            poster: currentDetailPoster, type: 'tv', year: currentDetailYear,
+            season: seasonNum, episode: epNum,
+            totalEps: episodes.length
+          });
           if (!getWatched().includes(seasonNum + 'x' + epNum)) {
             const eyeBtn = row.querySelector('.ep-eye-btn');
             await toggleWatched(seasonNum, epNum, eyeBtn);
@@ -1962,10 +2067,11 @@ function buildCard(movie, poster, year, rating, q, seasons, genres, fromHistoria
         <div style="display:flex;align-items:flex-start;gap:10px;">
           <div class="movie-title-big" style="flex:1;">${movie.title}</div>
           <div style="display:flex;flex-direction:column;gap:8px;align-items:center;">
-            <button class="fav-btn" id="trailerBgBtn" onclick="openTrailerModal()" title="Ver tráiler" style="display:none;">
+
+            <button class="fav-btn tip" id="trailerBgBtn" onclick="openTrailerModal()" data-tip="Ver tráiler en pantalla completa" style="display:none;">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             </button>
-            <button class="fav-btn" id="favBtn" onclick="toggleFavorite()" title="Agregar a favoritos">
+            <button class="fav-btn tip" id="favBtn" onclick="toggleFavorite()" data-tip="Favorito — activa alertas de novedades automáticamente">
               <svg width="22" height="22" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
             </button>
           </div>
@@ -1977,7 +2083,7 @@ function buildCard(movie, poster, year, rating, q, seasons, genres, fromHistoria
             <span id="trailerBtnText">Cargando tráiler…</span>
           </button>
           ${!isHist ? `
-          <button class="trailer-btn" id="playMovieBtn" style="background:#dc2626;" onclick="openVimeusPlayer()">
+          <button class="trailer-btn tip" id="playMovieBtn" data-tip="Reproducir con Vimeus" style="background:#dc2626;" onclick="openVimeusPlayer()">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
             <span>Reproducir</span>
           </button>` : ''}
@@ -2266,8 +2372,10 @@ function renderPersonFilms() {
     const card = document.createElement('a');
     card.className = 'browse-card';
     card.href = `?id=${item.id}&type=${mt}`;
+    const hasNewContent = hasNewBadge(item.id, mt);
     card.innerHTML = `
       <img src="https://image.tmdb.org/t/p/w342${item.poster_path}" alt="${title}" loading="lazy">
+      ${hasNewContent ? '<div class="card-new-badge" title="¡Nuevo contenido disponible!"></div>' : ''}
       <div class="browse-card-body">
         <div class="browse-card-title">${title}</div>
         ${year ? `<span class="browse-card-year">${year}</span>` : ''}
@@ -2332,14 +2440,36 @@ ${text.slice(0, 800)}`
 
 async function renderPersonCard(person) {
   const container = document.getElementById('container');
+  
+  if (!person.id) {
+    container.innerHTML = `<div class="state-msg" style="text-align:center;padding:40px;">
+      <div style="font-size:32px;margin-bottom:12px;">😕</div>
+      <div style="color:var(--t1);font-weight:600;margin-bottom:6px;">No se pudo cargar el perfil</div>
+      <div style="color:var(--t3);font-size:13px;">ID de persona no encontrado.</div>
+    </div>`;
+    return;
+  }
+
   const photoUrl = person.profile_path ? `https://image.tmdb.org/t/p/w342${person.profile_path}` : '';
 
-  // Get full details + credits in parallel
-  const [det, detEN, cred] = await Promise.all([
-    fetch(`https://api.themoviedb.org/3/person/${person.id}?api_key=${TMDB_KEY}&language=es-ES`).then(r=>r.json()),
-    fetch(`https://api.themoviedb.org/3/person/${person.id}?api_key=${TMDB_KEY}&language=en-US`).then(r=>r.json()),
-    fetch(`https://api.themoviedb.org/3/person/${person.id}/combined_credits?api_key=${TMDB_KEY}&language=es-ES`).then(r=>r.json()),
-  ]);
+  let det, detEN, cred;
+  try {
+    const [r1, r2, r3] = await Promise.all([
+      fetch(`https://api.themoviedb.org/3/person/${person.id}?api_key=${TMDB_KEY}&language=es-ES`),
+      fetch(`https://api.themoviedb.org/3/person/${person.id}?api_key=${TMDB_KEY}&language=en-US`),
+      fetch(`https://api.themoviedb.org/3/person/${person.id}/combined_credits?api_key=${TMDB_KEY}&language=es-ES`),
+    ]);
+    if (!r1.ok) throw new Error(`TMDB respondió ${r1.status}`);
+    [det, detEN, cred] = await Promise.all([r1.json(), r2.json(), r3.json()]);
+  } catch(e) {
+    console.error('renderPersonCard fetch error:', e);
+    container.innerHTML = `<div class="state-msg" style="text-align:center;padding:40px;">
+      <div style="font-size:32px;margin-bottom:12px;">😕</div>
+      <div style="color:var(--t1);font-weight:600;margin-bottom:6px;">No se pudo cargar el perfil</div>
+      <div style="color:var(--t3);font-size:13px;">${e.message || 'Revisá tu conexión e intentá de nuevo.'}</div>
+    </div>`;
+    return;
+  }
 
   // Always prefer Spanish bio; if missing or too short, translate English
   const esBio = det.biography || '';
@@ -2796,7 +2926,16 @@ async function openDetail(item) {
   try {
     if (item._isPerson) {
       pushHistory({ type: 'detail', item: { ...item, _isPerson: true } });
-      await renderPersonCard(item);
+      try {
+        await renderPersonCard(item);
+      } catch(personErr) {
+        console.error('renderPersonCard error:', personErr);
+        container.innerHTML = `<div class="state-msg" style="text-align:center;padding:40px;">
+          <div style="font-size:32px;margin-bottom:12px;">😕</div>
+          <div style="color:var(--t1);font-weight:600;margin-bottom:6px;">No se pudo cargar el perfil</div>
+          <div style="color:var(--t3);font-size:13px;">Revisá tu conexión e intentá de nuevo.</div>
+        </div>`;
+      }
       return;
     }
 
@@ -2869,6 +3008,7 @@ async function openDetail(item) {
       }
     }
     loadCast(item.id, window._fromHistorial);
+    setTimeout(updateAlertBtn, 100);
     // Capture historial mode before reset, pass to loadSeasons
     const _histMode = !!window._fromHistorial;
     window._fromHistorial = false;
@@ -3081,9 +3221,13 @@ async function toggleFavorite() {
   const idx = favs.findIndex(f => f.id === currentDetailId);
   const btn = document.getElementById('favBtn');
   if (idx >= 0) {
+    // Quitar de favoritos Y de seguimiento
     favs.splice(idx, 1);
     if (btn) btn.classList.remove('active');
+    const alerts = getAlerts().filter(a => !(a.id === currentDetailId && a.type === currentDetailType));
+    saveAlerts(alerts);
   } else {
+    // Agregar a favoritos Y activar seguimiento automáticamente
     favs.push({
       id: currentDetailId,
       title: currentDetailTitle,
@@ -3093,6 +3237,19 @@ async function toggleFavorite() {
       addedAt: Date.now()
     });
     if (btn) btn.classList.add('active');
+    const alerts = getAlerts();
+    if (!alerts.some(a => a.id === currentDetailId && a.type === currentDetailType)) {
+      alerts.push({
+        id: currentDetailId,
+        type: currentDetailType,
+        title: currentDetailTitle,
+        poster: currentDetailPoster,
+        addedAt: new Date().toISOString()
+      });
+      saveAlerts(alerts);
+      // Marcar el momento actual para detectar novedades desde ahora
+      localStorage.setItem(`movara_alert_last_${currentDetailId}`, new Date().toISOString());
+    }
   }
   await saveFavorites(favs);
 }
@@ -3102,6 +3259,185 @@ function updateFavBtn(id) {
   if (!btn) return;
   const favs = getFavorites();
   btn.classList.toggle('active', favs.some(f => f.id === id));
+}
+
+function updateWatchlistCount() {
+  const alerts = getAlerts();
+  const badge = document.getElementById('watchlistCount');
+  if (!badge) return;
+  if (alerts.length > 0) {
+    badge.textContent = alerts.length;
+    badge.style.display = 'inline';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function showWatchlist() {
+  const container = document.getElementById('container');
+  const alerts = getAlerts();
+  document.getElementById('backBtn').style.display = 'none';
+
+  if (!alerts.length) {
+    container.innerHTML = `
+    <div class="state-msg" style="text-align:center;padding:60px 20px;">
+      <div style="font-size:48px;margin-bottom:16px;">🔔</div>
+      <div style="font-size:18px;font-weight:700;color:var(--t1);margin-bottom:8px;">Sin seguimiento activo</div>
+      <div style="color:var(--t3);font-size:14px;">Entrá al perfil de una serie o película y activá la campana 🔔 para recibir notificaciones.</div>
+    </div>`;
+    return;
+  }
+
+  const cards = alerts.map(item => {
+    const poster = item.poster ? `https://image.tmdb.org/t/p/w342${item.poster}` : '';
+    const typeLabel = item.type === 'movie' ? '🎬' : '📺';
+    return `
+    <div style="position:relative;cursor:pointer;border-radius:12px;overflow:hidden;background:var(--bg3);border:1px solid var(--border2);transition:all .14s var(--ease);"
+      onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='var(--accent)'"
+      onmouseout="this.style.transform='';this.style.borderColor='var(--border2)'"
+      onclick="openDetail({id:${item.id},media_type:'${item.type === 'movie' ? 'movie' : 'tv'}',title:'${(item.title||'').replace(/'/g,"\\'")}',name:'${(item.title||'').replace(/'/g,"\\'")}',poster_path:'${item.poster||''}'})">
+      ${poster ? `<img src="${poster}" style="width:100%;aspect-ratio:2/3;object-fit:cover;display:block;" onerror="this.style.background='var(--bg4)'">` : `<div style="width:100%;aspect-ratio:2/3;background:var(--bg4);display:flex;align-items:center;justify-content:center;font-size:32px;">${typeLabel}</div>`}
+      <div style="position:absolute;top:6px;left:6px;background:rgba(0,0,0,.75);border-radius:20px;padding:2px 7px;font-size:10px;color:#facc15;">🔔</div>
+      <div style="padding:8px 10px 10px;">
+        <div style="font-size:12px;font-weight:600;color:var(--t1);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.title}</div>
+      </div>
+      <button onclick="event.stopPropagation();removeAlertFromWatchlist(${item.id},'${item.type}',this.closest('[onclick]'))"
+        style="position:absolute;top:6px;right:6px;background:rgba(0,0,0,.7);border:none;color:white;
+        border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;"
+        onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0'">✕</button>
+    </div>`;
+  }).join('');
+
+  container.innerHTML = `
+  <div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+      <div class="section-label" style="margin:0;">🔔 Seguimiento</div>
+      <span style="color:var(--t3);font-size:12px;">${alerts.length} ${alerts.length === 1 ? 'título' : 'títulos'}</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px;">
+      ${cards}
+    </div>
+  </div>`;
+}
+
+function removeAlertFromWatchlist(id, type, card) {
+  removeFromContinue(id, type); // no hace nada si no está
+  const alerts = getAlerts().filter(a => !(a.id === id && a.type === type));
+  saveAlerts(alerts);
+  card?.remove();
+  updateWatchlistCount();
+  if (!alerts.length) showWatchlist();
+}
+
+// ══ CONTINUAR VIENDO ══════════════════════════════════════
+
+function getContinueWatching() {
+  try { return JSON.parse(localStorage.getItem('movara_continue') || '[]'); } catch(e) { return []; }
+}
+
+function saveContinueWatching(list) {
+  localStorage.setItem('movara_continue', JSON.stringify(list.slice(0, 50)));
+}
+
+function addToContinue(entry) {
+  // entry: { id, title, poster, type, year, season, episode, totalEps, date }
+  let list = getContinueWatching();
+  list = list.filter(x => !(x.id === entry.id && x.type === entry.type));
+  list.unshift({ ...entry, date: new Date().toISOString() });
+  saveContinueWatching(list);
+  updateContinueBadge();
+}
+
+function removeFromContinue(id, type) {
+  let list = getContinueWatching();
+  list = list.filter(x => !(x.id === id && x.type === type));
+  saveContinueWatching(list);
+  updateContinueBadge();
+}
+
+function updateContinueBadge() {
+  const list = getContinueWatching();
+  const badge = document.getElementById('continueBadge');
+  if (!badge) return;
+  if (list.length > 0) {
+    badge.textContent = list.length > 9 ? '9+' : list.length;
+    badge.style.display = 'flex';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function showContinueWatching() {
+  const container = document.getElementById('container');
+  const list = getContinueWatching();
+  document.getElementById('backBtn').style.display = 'none';
+
+  if (!list.length) {
+    container.innerHTML = `
+    <div class="state-msg" style="text-align:center;padding:60px 20px;">
+      <div style="font-size:48px;margin-bottom:16px;">▶️</div>
+      <div style="font-size:18px;font-weight:700;color:var(--t1);margin-bottom:8px;">Nada por aquí todavía</div>
+      <div style="color:var(--t3);font-size:14px;">Cuando empieces una serie te aparecerá acá para que puedas continuar.</div>
+    </div>`;
+    return;
+  }
+
+  const cards = list.map(item => {
+    const poster = item.poster ? `https://image.tmdb.org/t/p/w342${item.poster}` : '';
+    const progress = item.type === 'tv' && item.totalEps
+      ? Math.round((item.episode / item.totalEps) * 100) : 0;
+    const subtitle = item.type === 'tv'
+      ? `Temporada ${item.season} · Ep. ${item.episode}`
+      : item.year || '';
+
+    return `
+    <div style="position:relative;cursor:pointer;border-radius:12px;overflow:hidden;background:var(--bg3);border:1px solid var(--border2);transition:all .14s var(--ease);"
+      onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='var(--accent)'"
+      onmouseout="this.style.transform='';this.style.borderColor='var(--border2)'"
+      onclick="openContinueItem(${item.id},'${item.type}',${item.season||0},${item.episode||0})">
+      <img src="${poster}" style="width:100%;aspect-ratio:2/3;object-fit:cover;display:block;"
+        onerror="this.style.background='var(--bg4)'">
+      ${progress > 0 ? `<div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(255,255,255,.2);">
+        <div style="width:${progress}%;height:100%;background:var(--accent);"></div>
+      </div>` : ''}
+      <div style="padding:8px 10px 10px;">
+        <div style="font-size:12px;font-weight:600;color:var(--t1);line-height:1.3;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.title}</div>
+        <div style="font-size:11px;color:var(--t3);">${subtitle}</div>
+      </div>
+      <button onclick="event.stopPropagation();removeContinueItem(${item.id},'${item.type}',this)"
+        style="position:absolute;top:6px;right:6px;background:rgba(0,0,0,.7);border:none;color:white;
+        border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;"
+        onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0'">✕</button>
+    </div>`;
+  }).join('');
+
+  container.innerHTML = `
+  <div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+      <div class="section-label" style="margin:0;">▶️ Continuar viendo</div>
+      <span style="color:var(--t3);font-size:12px;">${list.length} ${list.length === 1 ? 'título' : 'títulos'}</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px;">
+      ${cards}
+    </div>
+  </div>`;
+}
+
+function openContinueItem(id, type, season, episode) {
+  // Abrir el detalle y si es serie ir directo a la temporada
+  const list = getContinueWatching();
+  const item = list.find(x => x.id === id && x.type === type);
+  if (!item) return;
+  window._continueTarget = { season, episode };
+  openDetail({ id, media_type: type, title: item.title, name: item.title,
+    poster_path: item.poster, release_date: item.year + '-01-01' });
+}
+
+function removeContinueItem(id, type, btn) {
+  removeFromContinue(id, type);
+  btn.closest('[onclick^="openContinueItem"]')?.remove();
+  const list = getContinueWatching();
+  if (!list.length) showContinueWatching();
 }
 
 function showHistorial() {
@@ -3290,7 +3626,7 @@ async function showHome(pushNav = true) {
       <button class="home-tab" id="tabMovie" onclick="setHomeType('movie')">🎬 Películas</button>
       <button class="home-tab" id="tabTv" onclick="setHomeType('tv')">📺 Series</button>
       <button class="home-tab" id="tabCategories" onclick="setHomeType('categories')">🎭 Categorías</button>
-      <button class="sort-btn surprise-btn" onclick="surpriseMe()" title="Sorpréndeme" style="margin-left:auto;background:linear-gradient(135deg,#7c3aed,#db2777);border-color:transparent;color:#fff;padding:10px 22px;font-size:13px;">
+      <button class="sort-btn surprise-btn tip" onclick="surpriseMe()" data-tip="Te muestra una película o serie al azar" style="margin-left:auto;background:linear-gradient(135deg,#7c3aed,#db2777);border-color:transparent;color:#fff;padding:10px 22px;font-size:13px;">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
         <span>Sorpréndeme</span>
       </button>
@@ -3700,7 +4036,9 @@ function initAutocomplete() {
   });
 
   document.addEventListener('click', (e) => {
-    if (!e.target.closest('.search-wrap')) list.style.display = 'none';
+    if (!e.target.closest('#q') && !e.target.closest('#acList') && !e.target.closest('.search-row-new')) {
+      list.style.display = 'none';
+    }
   });
 }
 
@@ -3711,16 +4049,22 @@ async function fetchAutocomplete(q) {
     const r = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_KEY}&language=es-ES&query=${encodeURIComponent(q)}&page=1`);
     const d = await r.json();
     const items = (d.results || [])
-      .filter(x => (x.media_type === 'movie' || x.media_type === 'tv') && (x.poster_path || x.backdrop_path))
-      .slice(0, 5);
+      .filter(x => {
+        if (x.media_type === 'movie' || x.media_type === 'tv') return x.poster_path || x.backdrop_path;
+        if (x.media_type === 'person') return x.profile_path;
+        return false;
+      })
+      .slice(0, 6);
     if (!items.length) { list.style.display = 'none'; return; }
     _acActive = -1;
     list.innerHTML = items.map((item, i) => {
+      const isPerson = item.media_type === 'person';
       const title = item.title || item.name || '';
       const year = (item.release_date || item.first_air_date || '').slice(0,4);
-      const type = item.media_type === 'tv' ? 'Serie' : 'Película';
-      const img = item.poster_path
-        ? `<img src="https://image.tmdb.org/t/p/w92${item.poster_path}" alt="">`
+      const type = isPerson ? '👤 Persona' : item.media_type === 'tv' ? 'Serie' : 'Película';
+      const imgPath = isPerson ? item.profile_path : item.poster_path;
+      const img = imgPath
+        ? `<img src="https://image.tmdb.org/t/p/w92${imgPath}" alt="" style="${isPerson ? 'border-radius:50%;width:36px;height:36px;object-fit:cover;' : ''}">`
         : `<div style="width:32px;height:48px;background:var(--bg4);border-radius:4px;flex-shrink:0;"></div>`;
       return `<div class="autocomplete-item" data-idx="${i}" onclick="acSelect(${i})">
         ${img}
@@ -3741,7 +4085,9 @@ function acSelect(idx) {
   const item = list._items[idx];
   if (!item) return;
   list.style.display = 'none';
-  document.getElementById('q').value = item.title || item.name || '';
+  const qEl = document.getElementById('q');
+  if (qEl) qEl.value = item.title || item.name || '';
+  if (item.media_type === 'person') item._isPerson = true;
   openDetail(item);
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -3889,7 +4235,7 @@ function snNavigate(dir) {
   const focusables = getFocusables();
   if (!focusables.length) return;
 
-  // If nothing focused yet, focus first visible element
+  // Si nada enfocado, enfocar primer elemento
   if (!_snFocused || !document.contains(_snFocused)) {
     snFocus(focusables[0]);
     return;
@@ -3905,7 +4251,6 @@ function snNavigate(dir) {
     let dx = r.x - cur.x;
     let dy = r.y - cur.y;
 
-    // Check if candidate is in the right direction
     let inDir = false;
     let primary = 0, secondary = 0;
     if (dir === 'right') { inDir = r.left >= cur.right - 10; primary = dx; secondary = Math.abs(dy); }
@@ -3915,8 +4260,14 @@ function snNavigate(dir) {
 
     if (!inDir || primary <= 0) return;
 
-    // Score: primary distance + weighted secondary offset
-    const score = primary + secondary * 0.7;
+    // Score mejorado: penalizar más el desvío lateral para que en grillas
+    // se mueva a la portada del mismo nivel y no salte a otra fila
+    const overlap = (dir === 'left' || dir === 'right')
+      ? Math.max(0, Math.min(cur.bottom, r.bottom) - Math.max(cur.top, r.top))   // overlap vertical
+      : Math.max(0, Math.min(cur.right, r.right) - Math.max(cur.left, r.left));  // overlap horizontal
+    const hasOverlap = overlap > 10;
+    // Si hay overlap (misma fila/columna), priorizar fuertemente
+    const score = primary + secondary * (hasOverlap ? 0.1 : 2.5);
     if (score < bestScore) { bestScore = score; best = el; }
   });
 
@@ -3946,12 +4297,32 @@ function disableSpatialNav() {
 
 function _snKeyHandler(e) {
   if (!_tvMode) return;
+
+  // Mapear keyCodes de controles remotos de TV a teclas estándar
+  // Samsung Tizen, LG webOS, Android TV, HbbTV todos usan códigos distintos
+  const KC = e.keyCode || e.which || 0;
+  let key = e.key;
+
+  // Flechas (estándar + algunos TVs que mandan solo keyCode)
+  if (KC === 37 || key === 'ArrowLeft')  key = 'ArrowLeft';
+  if (KC === 38 || key === 'ArrowUp')    key = 'ArrowUp';
+  if (KC === 39 || key === 'ArrowRight') key = 'ArrowRight';
+  if (KC === 40 || key === 'ArrowDown')  key = 'ArrowDown';
+  if (KC === 13 || key === 'Enter')      key = 'Enter';
+
+  // Tecla Back / Return de controles remotos
+  if (KC === 8   || key === 'Backspace')   key = 'Back';
+  if (KC === 10009|| key === 'BrowserBack') key = 'Back'; // Samsung
+  if (KC === 461  || key === 'GoBack')      key = 'Back'; // LG webOS
+  if (KC === 27   || key === 'Escape')      key = 'Back'; // Escape como back
+
   // Don't intercept when typing in input
   if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') {
-    if (e.key === 'Escape') { document.activeElement.blur(); snFocus(document.getElementById('go') || getFocusables()[0]); }
+    if (key === 'Back') { document.activeElement.blur(); snFocus(document.getElementById('go') || getFocusables()[0]); }
     return;
   }
-  switch(e.key) {
+
+  switch(key) {
     case 'ArrowRight': e.preventDefault(); snNavigate('right'); break;
     case 'ArrowLeft':  e.preventDefault(); snNavigate('left');  break;
     case 'ArrowDown':  e.preventDefault(); snNavigate('down');  break;
@@ -3960,18 +4331,21 @@ function _snKeyHandler(e) {
       e.preventDefault();
       if (_snFocused) {
         _snFocused.click();
-        // After click, re-focus something visible shortly after
         setTimeout(() => {
           const f = getFocusables();
           if (f.length && (!_snFocused || !document.contains(_snFocused))) snFocus(f[0]);
         }, 300);
+      } else {
+        // Nada enfocado — enfocar primer elemento
+        const f = getFocusables();
+        if (f.length) snFocus(f[0]);
       }
       break;
-    case 'Backspace':
-    case 'BrowserBack':
+    case 'Back':
       e.preventDefault();
       const backBtn = document.getElementById('backBtn');
       if (backBtn && backBtn.style.display !== 'none') backBtn.click();
+      else showHome();
       break;
   }
 }
@@ -4010,6 +4384,285 @@ document.getElementById('trailerModal').addEventListener('click', (e) => {
 });
 
 // URL params for direct links
+
+// ══ NOTIFICACIONES VIMEUS ════════════════════════════════
+const VIMEUS_API_KEY = 'ak_CTAhNgnfYdvs4luimE6XZfQHysysd0YU';
+const NOTIF_STORAGE_KEY = 'movara_notifs';
+const NOTIF_SEEN_KEY = 'movara_notifs_seen';
+const NOTIF_LAST_CHECK = 'movara_notifs_lastcheck';
+
+function getSeenNotifs() {
+  try { return JSON.parse(localStorage.getItem(NOTIF_SEEN_KEY) || '[]'); } catch(e) { return []; }
+}
+function saveSeenNotifs(arr) {
+  localStorage.setItem(NOTIF_SEEN_KEY, JSON.stringify(arr));
+}
+function getSavedNotifs() {
+  try { return JSON.parse(localStorage.getItem(NOTIF_STORAGE_KEY) || '[]'); } catch(e) { return []; }
+}
+function saveNotifs(arr) {
+  localStorage.setItem(NOTIF_STORAGE_KEY, JSON.stringify(arr.slice(0, 50)));
+}
+
+function toggleNotifPanel() {
+  const panel = document.getElementById('notifPanel');
+  const isOpen = panel.style.display !== 'none';
+  if (isOpen) {
+    panel.style.display = 'none';
+  } else {
+    panel.style.display = 'block';
+    // Marcar como vistos al abrir
+    const notifs = getSavedNotifs();
+    const seen = notifs.map(n => n.id);
+    saveSeenNotifs(seen);
+    updateNotifBadge();
+    renderNotifList();
+  }
+}
+
+function clearNotifs() {
+  const notifs = getSavedNotifs();
+  saveSeenNotifs(notifs.map(n => n.id));
+  updateNotifBadge();
+  renderNotifList();
+}
+
+function updateNotifBadge() {
+  const badge = document.getElementById('notifBadge');
+  if (!badge) return;
+  const notifs = getSavedNotifs();
+  const seen = getSeenNotifs();
+  const unseen = notifs.filter(n => !seen.includes(n.id)).length;
+  if (unseen > 0) {
+    badge.textContent = unseen > 9 ? '9+' : unseen;
+    badge.style.display = 'flex';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function renderNotifList() {
+  const list = document.getElementById('notifList');
+  const empty = document.getElementById('notifEmpty');
+  if (!list) return;
+  const notifs = getSavedNotifs();
+  const seen = getSeenNotifs();
+
+  if (!notifs.length) {
+    list.innerHTML = '<div id="notifEmpty" style="text-align:center;padding:32px 16px;color:var(--t3);font-size:13px;"><div style="font-size:28px;margin-bottom:8px;">✅</div>Sin novedades por ahora.</div>';
+    return;
+  }
+
+  list.innerHTML = notifs.map(n => {
+    const isNew = !seen.includes(n.id);
+    const poster = n.poster ? `https://image.tmdb.org/t/p/w92${n.poster}` : '';
+    const typeLabel = n.type === 'movie' ? '🎬 Película' : n.type === 'anime' ? '⛩️ Anime' : '📺 Serie';
+    const timeAgo = getTimeAgo(n.synced_at);
+    return `
+    <div onclick="openNotifItem(${n.tmdb_id},'${n.type}')" style="display:flex;gap:10px;padding:10px 16px;cursor:pointer;transition:background .13s;border-left:3px solid ${isNew ? 'var(--accent)' : 'transparent'};"
+      onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background=''">
+      ${poster ? `<img src="${poster}" style="width:40px;height:60px;object-fit:cover;border-radius:6px;flex-shrink:0;">` : `<div style="width:40px;height:60px;background:var(--bg4);border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px;">🎬</div>`}
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:12px;font-weight:${isNew ? '700' : '500'};color:${isNew ? 'var(--t1)' : 'var(--t2)'};line-height:1.3;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${n.title}</div>
+        <div style="font-size:11px;color:var(--accent);margin-bottom:2px;">${typeLabel} · Nuevo en Movara</div>
+        <div style="font-size:10px;color:var(--t3);">${timeAgo}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openNotifItem(tmdbId, type) {
+  document.getElementById('notifPanel').style.display = 'none';
+  const mt = type === 'movie' ? 'movie' : 'tv';
+  fetch(`https://api.themoviedb.org/3/${mt}/${tmdbId}?api_key=${TMDB_KEY}&language=es-ES`)
+    .then(r => r.json())
+    .then(item => { item.media_type = mt; openDetail(item); })
+    .catch(() => {});
+}
+
+function getTimeAgo(dateStr) {
+  if (!dateStr) return '';
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return `hace ${mins} min`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `hace ${hrs}h`;
+  const days = Math.floor(hrs / 24);
+  return `hace ${days} día${days > 1 ? 's' : ''}`;
+}
+
+async function checkVimeusNewContent() {
+  const lastCheck = localStorage.getItem(NOTIF_LAST_CHECK);
+  const now = Date.now();
+  // Solo revisar cada 30 minutos
+  if (lastCheck && now - parseInt(lastCheck) < 30 * 60 * 1000) {
+    updateNotifBadge();
+    return;
+  }
+
+  try {
+    const headers = { 'X-API-Key': VIMEUS_API_KEY };
+    const [moviesRes, seriesRes, animesRes] = await Promise.all([
+      fetch('https://vimeus.com/api/listing/movies?page=1', { headers }).then(r => r.json()),
+      fetch('https://vimeus.com/api/listing/series?page=1', { headers }).then(r => r.json()),
+      fetch('https://vimeus.com/api/listing/animes?page=1', { headers }).then(r => r.json()),
+    ]);
+
+    const prevNotifs = getSavedNotifs();
+    const prevIds = new Set(prevNotifs.map(n => `${n.type}_${n.tmdb_id}`));
+
+    const newItems = [];
+
+    (moviesRes?.data?.movies || []).slice(0, 10).forEach(m => {
+      const key = `movie_${m.tmdb_id}`;
+      if (!prevIds.has(key)) newItems.push({ id: key, tmdb_id: m.tmdb_id, title: m.title, poster: m.poster, type: 'movie', synced_at: m.synced_at });
+    });
+    (seriesRes?.data?.series || []).slice(0, 10).forEach(s => {
+      const key = `series_${s.tmdb_id}`;
+      if (!prevIds.has(key)) newItems.push({ id: key, tmdb_id: s.tmdb_id, title: s.title, poster: s.poster, type: 'series', synced_at: s.synced_at });
+    });
+    (animesRes?.data?.animes || []).slice(0, 10).forEach(a => {
+      const key = `anime_${a.tmdb_id}`;
+      if (!prevIds.has(key)) newItems.push({ id: key, tmdb_id: a.tmdb_id, title: a.title, poster: a.poster, type: 'anime', synced_at: a.synced_at });
+    });
+
+    if (newItems.length > 0 || prevNotifs.length === 0) {
+      // Primera vez: guardar sin marcar como nuevo (no spamear)
+      if (prevNotifs.length === 0) {
+        const allItems = [
+          ...(moviesRes?.data?.movies || []).slice(0, 5).map(m => ({ id: `movie_${m.tmdb_id}`, tmdb_id: m.tmdb_id, title: m.title, poster: m.poster, type: 'movie', synced_at: m.synced_at })),
+          ...(seriesRes?.data?.series || []).slice(0, 5).map(s => ({ id: `series_${s.tmdb_id}`, tmdb_id: s.tmdb_id, title: s.title, poster: s.poster, type: 'series', synced_at: s.synced_at })),
+          ...(animesRes?.data?.animes || []).slice(0, 5).map(a => ({ id: `anime_${a.tmdb_id}`, tmdb_id: a.tmdb_id, title: a.title, poster: a.poster, type: 'anime', synced_at: a.synced_at })),
+        ];
+        saveNotifs(allItems);
+        saveSeenNotifs(allItems.map(n => n.id)); // marcar todos como vistos la primera vez
+      } else {
+        const updated = [...newItems, ...prevNotifs];
+        saveNotifs(updated);
+      }
+    }
+
+    localStorage.setItem(NOTIF_LAST_CHECK, String(now));
+    updateNotifBadge();
+  } catch(e) {
+    console.warn('Notif check failed:', e);
+  }
+}
+
+// Cerrar panel al hacer click fuera
+document.addEventListener('click', (e) => {
+  const panel = document.getElementById('notifPanel');
+  const btn = document.getElementById('notifBtn');
+  if (panel && panel.style.display !== 'none' && !panel.contains(e.target) && !btn.contains(e.target)) {
+    panel.style.display = 'none';
+  }
+});
+
+// ══ ALERTAS POR TÍTULO ═══════════════════════════════════
+// ── BADGE NOVEDADES EN PORTADA ───────────────────────────
+function hasNewBadge(tmdbId, mediaType) {
+  // Verificar si este item está en las notificaciones no vistas
+  const notifs = getSavedNotifs();
+  const seen = getSeenNotifs();
+  return notifs.some(n => 
+    n.tmdb_id === tmdbId && 
+    !seen.includes(n.id) &&
+    (n.isAlert || n.type === (mediaType === 'tv' ? 'series' : 'movie'))
+  );
+}
+
+function getAlerts() {
+  try { return JSON.parse(localStorage.getItem('movara_alerts') || '[]'); } catch(e) { return []; }
+}
+function saveAlerts(arr) {
+  localStorage.setItem('movara_alerts', JSON.stringify(arr));
+}
+function isAlerted(id, type) {
+  return getAlerts().some(a => a.id === id && a.type === type);
+}
+function toggleAlert() {
+  if (!currentDetailId) return;
+  const alerts = getAlerts();
+  const existing = alerts.findIndex(a => a.id === currentDetailId && a.type === currentDetailType);
+  const btn = document.getElementById('alertBtn');
+  const dot = document.getElementById('alertBtnDot');
+  const icon = document.getElementById('alertBtnIcon');
+  if (existing >= 0) {
+    alerts.splice(existing, 1);
+    saveAlerts(alerts);
+    if (dot) dot.style.display = 'none';
+    if (icon) { icon.setAttribute('fill','none'); icon.style.stroke = 'currentColor'; }
+    showToast('🔕 Alerta desactivada');
+  } else {
+    alerts.push({
+      id: currentDetailId,
+      type: currentDetailType,
+      title: currentDetailTitle,
+      poster: currentDetailPoster,
+      addedAt: new Date().toISOString()
+    });
+    saveAlerts(alerts);
+    if (dot) dot.style.display = 'block';
+    if (icon) { icon.setAttribute('fill','#facc15'); icon.style.stroke = '#facc15'; }
+    showToast('🔔 Te avisaremos cuando haya novedades');
+  }
+}
+function updateAlertBtn() {
+  if (!currentDetailId) return;
+  const active = isAlerted(currentDetailId, currentDetailType);
+  const dot = document.getElementById('alertBtnDot');
+  const icon = document.getElementById('alertBtnIcon');
+  if (!dot || !icon) return;
+  if (active) {
+    dot.style.display = 'block';
+    icon.setAttribute('fill','#facc15');
+    icon.style.stroke = '#facc15';
+  } else {
+    dot.style.display = 'none';
+    icon.setAttribute('fill','none');
+    icon.style.stroke = 'currentColor';
+  }
+}
+
+// Verificar alertas contra novedades de Vimeus
+async function checkAlertsAgainstVimeus() {
+  const alerts = getAlerts();
+  if (!alerts.length) return;
+  try {
+    const headers = { 'X-API-Key': VIMEUS_API_KEY };
+    const newNotifs = [];
+    for (const alert of alerts) {
+      const type = alert.type === 'tv' ? 'series' : alert.type === 'movie' ? 'movies' : 'animes';
+      const res = await fetch(`https://vimeus.com/api/listing/episodes?tmdb_id=${alert.id}&page=1`, { headers }).then(r=>r.json());
+      const episodes = res?.data?.episodes || [];
+      if (!episodes.length) continue;
+      // Verificar si hay episodios nuevos desde la última vez que se revisó esta alerta
+      const lastKey = `movara_alert_last_${alert.id}`;
+      const lastSynced = localStorage.getItem(lastKey) || '1970-01-01T00:00:00Z';
+      const newEps = episodes.filter(e => e.synced_at > lastSynced);
+      if (newEps.length > 0) {
+        const latest = newEps[0];
+        newNotifs.push({
+          id: `alert_${alert.id}_s${latest.season}e${latest.episode}_${Date.now()}`,
+          tmdb_id: alert.id,
+          title: `${alert.title} — T${latest.season} E${latest.episode}`,
+          poster: alert.poster,
+          type: alert.type === 'tv' ? 'series' : alert.type,
+          synced_at: latest.synced_at,
+          isAlert: true
+        });
+        localStorage.setItem(lastKey, latest.synced_at);
+      }
+    }
+    if (newNotifs.length > 0) {
+      const prev = getSavedNotifs();
+      saveNotifs([...newNotifs, ...prev]);
+      updateNotifBadge();
+    }
+  } catch(e) { console.warn('Alert check failed:', e); }
+}
+
+// Notificación de prueba eliminada
 async function handleUrlParams() {
   const params = new URLSearchParams(window.location.search);
   const id = params.get('id');
@@ -4037,8 +4690,20 @@ async function handleUrlParams() {
   return false;
 }
 
+// Limpiar notificación de prueba si quedó guardada
+(function cleanTestNotif() {
+  const notifs = getSavedNotifs().filter(n => !n.isTest);
+  if (notifs.length !== getSavedNotifs().length) {
+    saveNotifs(notifs);
+    saveSeenNotifs(getSeenNotifs().filter(id => !id.startsWith('test_')));
+  }
+})();
+
 handleUrlParams().then(handled => {
   if (!handled) showHome();
+  updateContinueBadge();
+  checkVimeusNewContent();
+  checkAlertsAgainstVimeus();
 });
 </script>
 </body>

@@ -998,6 +998,13 @@ body.tv-mode .sn-focusable.sn-focused {
   box-shadow: 0 0 0 4px rgba(232,197,71,0.25) !important;
   border-color: var(--accent) !important;
 }
+.episode-row { cursor: pointer; }
+body.tv-mode .episode-row.sn-focused {
+  background: var(--bg3) !important;
+  border-color: var(--accent) !important;
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
 body.tv-mode .browse-card.sn-focused {
   transform: translateY(-4px) scale(1.04) !important;
   border-color: var(--accent) !important;
@@ -1872,6 +1879,35 @@ function renderEpPlatformSelector() {
 }
 let currentTvId = null;
 
+async function playEpisodeRow(e, row, seasonNum, epNum, episodes, histMode) {
+  if (histMode) return;
+  const noEmbedPlatforms = new Set(['hdfull', 'pelispedia']);
+  const seriesSlug = (currentDetailOriginal || currentDetailTitle || '').toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g,'')
+    .replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  const cuevanaUrl    = `https://cuevana.bi/serie/${seriesSlug}/episodio-${seasonNum}x${epNum}`;
+  const pelisflixUrl  = `https://pelisflix1.homes/episodio/${seriesSlug}-${seasonNum}x${epNum}/`;
+  const hdfullUrl     = `https://hdfull.org/serie/${seriesSlug}/temporada-${seasonNum}/episodio-${epNum}`;
+  const pelisplushUrl = `https://www.pelisplushd.ms/serie/${seriesSlug}/temporada/${seasonNum}/capitulo/${epNum}`;
+  const pelispediaUrl = `https://pelispedia.mov/search?s=${encodeURIComponent(currentDetailTitle||'')}`;
+  if (activePlatform && activePlatform !== 'vimeus') {
+    const urls = { cuevana: cuevanaUrl, pelisflix: pelisflixUrl, hdfull: hdfullUrl, pelisplushd: pelisplushUrl, pelispedia: pelispediaUrl };
+    const url = urls[activePlatform];
+    if (url) {
+      if (noEmbedPlatforms.has(activePlatform)) window.open(url, '_blank');
+      else openEpisodePlayer(url, `${currentDetailTitle} — T${seasonNum}E${epNum}`, activePlatform);
+    }
+  } else {
+    const vimeusUrl = `https://vimeus.com/e/serie?tmdb=${currentDetailId}&se=${seasonNum}&ep=${epNum}&view_key=${VIMEUS_KEY}&theme=cosmic&loader=v3&font=v3&overlay=v5&playUI=v3&splash=v3`;
+    openEpisodePlayer(vimeusUrl, `${currentDetailTitle} — T${seasonNum}E${epNum}`, 'Vimeus');
+  }
+  addToContinue({ id: currentDetailId, title: currentDetailTitle, poster: currentDetailPoster, type: 'tv', year: currentDetailYear, season: seasonNum, episode: epNum, totalEps: episodes.length });
+  if (!getWatched().includes(seasonNum + 'x' + epNum)) {
+    const eyeBtn = row.querySelector('.ep-eye-btn');
+    await toggleWatched(seasonNum, epNum, eyeBtn);
+  }
+}
+
 async function loadSeasons(tvId, totalSeasons, histMode) {
   currentTvId = tvId;
   activeSeason = null;
@@ -2072,6 +2108,15 @@ async function toggleSeason(tvId, seasonNum, clickedCard, histMode) {
 
       if (!histMode) {
         const noEmbedPlatforms = new Set(['hdfull', 'pelispedia']);
+
+        // Click en toda la fila (para TV y móvil)
+        row.style.cursor = 'pointer';
+        row.addEventListener('click', async (e) => {
+          // Ignorar clicks en el ojo
+          if (e.target.closest('.ep-eye-btn') || e.target.closest('.marathon-btn')) return;
+          playEpisodeRow(e, row, seasonNum, epNum, episodes, histMode);
+        });
+
         row.querySelector('.ep-play-btn')?.addEventListener('click', async (e) => {
           e.stopPropagation();
           if (activePlatform && activePlatform !== 'vimeus') {
@@ -4265,6 +4310,7 @@ function getFocusables() {
     '.fav-btn',
     '.season-card',
     '.ep-play-btn',
+    '.episode-row',
     '.ep-eye-btn',
     '.marathon-btn',
     '.rp-btn',
@@ -4374,22 +4420,22 @@ function _snKeyHandler(e) {
   if (!_tvMode) return;
 
   // Mapear keyCodes de controles remotos de TV a teclas estándar
-  // Samsung Tizen, LG webOS, Android TV, HbbTV todos usan códigos distintos
   const KC = e.keyCode || e.which || 0;
-  let key = e.key;
+  let key = e.key || '';
 
-  // Flechas (estándar + algunos TVs que mandan solo keyCode)
-  if (KC === 37 || key === 'ArrowLeft')  key = 'ArrowLeft';
-  if (KC === 38 || key === 'ArrowUp')    key = 'ArrowUp';
-  if (KC === 39 || key === 'ArrowRight') key = 'ArrowRight';
-  if (KC === 40 || key === 'ArrowDown')  key = 'ArrowDown';
-  if (KC === 13 || key === 'Enter')      key = 'Enter';
+  // Flechas — Samsung Tizen usa tanto e.key como keyCode
+  if (KC === 37 || key === 'ArrowLeft'  || key === 'Left')  key = 'ArrowLeft';
+  if (KC === 38 || key === 'ArrowUp'    || key === 'Up')    key = 'ArrowUp';
+  if (KC === 39 || key === 'ArrowRight' || key === 'Right') key = 'ArrowRight';
+  if (KC === 40 || key === 'ArrowDown'  || key === 'Down')  key = 'ArrowDown';
+  if (KC === 13 || KC === 10009 || key === 'Enter' || key === 'Return') key = 'Enter';
 
-  // Tecla Back / Return de controles remotos
-  if (KC === 8   || key === 'Backspace')   key = 'Back';
-  if (KC === 10009|| key === 'BrowserBack') key = 'Back'; // Samsung
-  if (KC === 461  || key === 'GoBack')      key = 'Back'; // LG webOS
-  if (KC === 27   || key === 'Escape')      key = 'Back'; // Escape como back
+  // Back — Samsung Tizen: 10009, LG webOS: 461, estándar: 8/27
+  if (KC === 8 || KC === 10009 || KC === 461 || KC === 27 ||
+      key === 'Backspace' || key === 'BrowserBack' || key === 'GoBack' || key === 'Escape') key = 'Back';
+
+  // Samsung Tizen: registrar teclas del control para debug
+  // console.log('TV Key:', key, 'KC:', KC);
 
   // Don't intercept when typing in input
   if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') {

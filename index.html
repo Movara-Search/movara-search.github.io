@@ -4830,6 +4830,13 @@ async function fetchYtChannelVideos() {
     localStorage.setItem('movara_yt_cache', JSON.stringify({ ts: Date.now(), videos: _ytVideos }));
   } catch(e) {
     console.error('YT fetch error:', e);
+    _ytVideos = [];
+    const container = document.getElementById('container');
+    if (container) container.innerHTML = `<div class="state-msg" style="text-align:center;padding:40px;">
+      <div style="font-size:32px;margin-bottom:12px;">⚠️</div>
+      <div style="color:var(--t1);font-weight:600;margin-bottom:6px;">No se pudieron cargar los videos</div>
+      <div style="color:var(--t3);font-size:13px;">${e.message}</div>
+    </div>`;
   }
   _ytLoading = false;
 }
@@ -4881,6 +4888,14 @@ async function showHistorias() {
   }
 
   _ytPage = 0;
+  if (_ytVideos.length === 0) {
+    container.innerHTML = `<div class="state-msg" style="text-align:center;padding:40px;">
+      <div style="font-size:32px;margin-bottom:12px;">📭</div>
+      <div style="color:var(--t1);font-weight:600;margin-bottom:6px;">No se encontraron videos</div>
+      <div style="color:var(--t3);font-size:13px;">Verificá que la API key de YouTube sea válida y tenga acceso habilitado para este dominio.</div>
+    </div>`;
+    return;
+  }
   renderYtGrid(container, true);
 }
 

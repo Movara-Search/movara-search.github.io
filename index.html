@@ -4954,8 +4954,119 @@ function ytSurprise() {
     showToast('¡Ya viste todos los videos!');
     return;
   }
-  const v = unwatched[Math.floor(Math.random() * unwatched.length)];
-  openYtDetail(v.id);
+
+  const chosen = unwatched[Math.floor(Math.random() * unwatched.length)];
+  const slideItems = [...unwatched].sort(() => Math.random() - .5).slice(0, 20);
+
+  // Overlay igual al surpriseMe original
+  const overlay = document.createElement('div');
+  overlay.style.cssText = `position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer;`;
+  overlay.innerHTML = `
+    <div style="position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(8px);z-index:0;"></div>
+    <div id="srBox" style="position:relative;z-index:1;width:800px;max-width:96vw;border-radius:18px;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.85);">
+      <div id="srBgA" style="position:absolute;inset:0;background-size:cover;background-position:center;transition:opacity .55s ease;opacity:0;"></div>
+      <div id="srBgB" style="position:absolute;inset:0;background-size:cover;background-position:center;transition:opacity .55s ease;opacity:0;"></div>
+      <div style="position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,.88) 36%,transparent 68%),linear-gradient(to top,rgba(0,0,0,.5) 0%,transparent 40%);"></div>
+      <div style="height:450px;"></div>
+      <div id="srReveal" style="position:absolute;inset:0;display:flex;align-items:stretch;opacity:0;transition:opacity .5s ease;pointer-events:none;">
+        <div style="flex-shrink:0;width:274px;">
+          <img id="srPoster" src="" style="width:274px;height:450px;object-fit:cover;display:block;">
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:22px 22px 22px 18px;min-width:0;pointer-events:all;">
+          <div id="srTitleText" style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:#fff;letter-spacing:.04em;line-height:1.2;text-shadow:0 2px 8px rgba(0,0,0,.9);margin-bottom:8px;"></div>
+          <div id="srYearText" style="font-size:12px;color:rgba(255,255,255,.55);font-family:'DM Sans',sans-serif;margin-bottom:16px;"></div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+            <button id="srOpenBtn" style="background:var(--accent);color:#000;border:none;border-radius:8px;padding:9px 22px;font-size:14px;font-family:sans-serif;font-weight:700;cursor:pointer;pointer-events:all;">▶ Reproducir</button>
+            <button id="srSpinBtn" style="background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:9px 18px;font-size:13px;font-family:sans-serif;font-weight:600;cursor:pointer;pointer-events:all;backdrop-filter:blur(4px);transition:background .15s;">🔀 Volver a girar</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+
+  let cancelled = false;
+  let currentChosen = chosen;
+
+  overlay.addEventListener('click', (e) => {
+    if (e.target.closest('#srBox')) return;
+    cancelled = true;
+    if (document.body.contains(overlay)) document.body.removeChild(overlay);
+  });
+
+  document.getElementById('srOpenBtn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    cancelled = true;
+    if (document.body.contains(overlay)) document.body.removeChild(overlay);
+    openYtDetail(currentChosen.id);
+  });
+
+  document.getElementById('srSpinBtn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    const reveal = document.getElementById('srReveal');
+    if (reveal) reveal.style.opacity = '0';
+    cancelled = true;
+    const newUnwatched = getSortedYtVideos().filter(v => !isYtWatched(v.id));
+    if (!newUnwatched.length) return;
+    currentChosen = newUnwatched[Math.floor(Math.random() * newUnwatched.length)];
+    const newSlide = [...newUnwatched].sort(() => Math.random() - .5).slice(0, 20);
+    slideItems.splice(0, slideItems.length, ...newSlide);
+    slideIdx = 0; useA = true; cancelled = false;
+    runSlideshow(currentChosen);
+  });
+
+  const bgA = document.getElementById('srBgA');
+  const bgB = document.getElementById('srBgB');
+  let slideIdx = 0;
+  let useA = true;
+
+  function showSlide(idx) {
+    if (cancelled) return;
+    const item = slideItems[idx % slideItems.length];
+    const url = item.thumb;
+    if (useA) { bgA.style.backgroundImage = `url('${url}')`; bgA.style.opacity = '1'; bgB.style.opacity = '0'; }
+    else       { bgB.style.backgroundImage = `url('${url}')`; bgB.style.opacity = '1'; bgA.style.opacity = '0'; }
+    useA = !useA;
+    slideIdx++;
+  }
+
+  function runSlideshow(finalVideo) {
+    showSlide(0);
+    let si = 0;
+    const fast = setInterval(() => {
+      if (cancelled || si >= 11) { clearInterval(fast); return; }
+      showSlide(slideIdx); si++;
+    }, 220);
+
+    setTimeout(() => {
+      if (cancelled) return;
+      clearInterval(fast);
+      let si2 = 0;
+      const slow = setInterval(() => {
+        if (cancelled || si2 >= 3) { clearInterval(slow); return; }
+        showSlide(slideIdx); si2++;
+      }, 450);
+
+      setTimeout(() => {
+        if (cancelled) return;
+        clearInterval(slow);
+        // Mostrar thumb del video elegido como fondo final
+        bgA.style.backgroundImage = `url('${finalVideo.thumb}')`;
+        bgA.style.opacity = '1'; bgB.style.opacity = '0';
+
+        setTimeout(() => {
+          if (cancelled) return;
+          document.getElementById('srPoster').src = finalVideo.thumb;
+          document.getElementById('srTitleText').textContent = finalVideo.title;
+          document.getElementById('srYearText').textContent =
+            `${fmtDuration(finalVideo.duration)} · ${fmtViews(finalVideo.views)} · ${fmtDateAgo(finalVideo.publishedAt)}`;
+          const rev = document.getElementById('srReveal');
+          if (rev) rev.style.opacity = '1';
+        }, 300);
+      }, 1300);
+    }, 1500);
+  }
+
+  runSlideshow(currentChosen);
 }
 
 function openYtDetail(videoId) {

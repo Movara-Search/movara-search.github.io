@@ -1518,8 +1518,8 @@ const DEFAULT_PLATFORMS = [
   { name:"HDFull",       domain:"hdfull.org",        url:"https://hdfull.org/{type}/{slug}",                         unofficial:true  },
   { name:"PelisPlusHD",  domain:"pelisplushd.ms",    url:"https://www.pelisplushd.ms/search?s={q}",                   unofficial:true  },
   { name:"SeriesFlixHD", domain:"seriesflixhd.shop", url:"https://seriesflixhd.shop/?s={q}",                          unofficial:true  },
-  { name:"HDFull",       domain:"hdfull.org",        url:"https://hdfull.org/{type}/{slug}",                          unofficial:true, noEmbed:true },
-  { name:"PelisPedia",   domain:"pelispedia.mov",    url:"https://pelispedia.mov/search?s={q_es}",                    unofficial:true, noEmbed:true },
+  { name:"PelisPedia",   domain:"pelispedia.mov",    url:"https://pelispedia.mov/search?s={q_es}",                    unofficial:true  },
+  { name:"LA Movie",     domain:"la.movie",          url:"https://la.movie/?s={q}",                                  unofficial:true  },
 ];
 
 // JustWatch provider IDs → domain mapping (AR catalogue)
@@ -2982,6 +2982,12 @@ function toggleStreamingMenu(e) {
   menu.style.display = isOpen ? 'none' : 'flex';
 }
 
+
+function openLaMovieSeries() {
+  const searchTitle = currentDetailOriginal || currentDetailTitle || '';
+  const q = encodeURIComponent(searchTitle);
+  window.open(`https://la.movie/?s=${q}`, '_blank');
+}
 function renderResultPlatforms(title) {
   const container = document.getElementById('resultPlatforms');
   if (!container) return;
@@ -2993,9 +2999,16 @@ function renderResultPlatforms(title) {
     .replace(/[^a-z0-9\s-]/g, '')
     .trim().replace(/\s+/g, '-');
   const type = currentMediaType === 'tv' ? 'serie' : 'pelicula';
+  const type_la = currentMediaType === 'tv' ? 'series' : 'peliculas';
+  // slug_year usa título original en inglés si está disponible, + año
+  const slugOriginal = (currentDetailOriginal || title).toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim().replace(/\s+/g, '-');
+  const slug_year = currentDetailYear ? `${slugOriginal}-${currentDetailYear}` : slugOriginal;
 
   const legalDomains = new Set(['netflix.com','primevideo.com','disneyplus.com','max.com','tv.apple.com','paramountplus.com','starplus.com','movistarplus.es','clarovideo.com','crunchyroll.com']);
-  const unofficialDomains = new Set(['pelisflix1.homes','cuevana.bi','hdfull.org','pelisplushd.ms','pelispedia.mov','seriesflixhd.shop']);
+  const unofficialDomains = new Set(['pelisflix1.homes','cuevana.bi','hdfull.org','pelisplushd.ms','pelispedia.mov','seriesflixhd.shop','la.movie']);
   const legalPlatforms = platforms.filter(p => legalDomains.has(p.domain));
   const unofficialPlatforms = platforms.filter(p => unofficialDomains.has(p.domain));
 
@@ -3005,7 +3018,7 @@ function renderResultPlatforms(title) {
   };
 
   container.innerHTML = legalPlatforms.map(p => {
-    const url = p.url.replace('{q}', q).replace('{q_es}', q_es).replace('{slug}', slug).replace('{type}', type);
+    const url = p.url.replace('{q}', q).replace('{q_es}', q_es).replace('{slug}', slug).replace('{type}', type).replace('{type_la}', type_la).replace('{slug_year}', slug_year);
     const fav = faviconOverrides[p.domain] || `https://www.google.com/s2/favicons?sz=64&domain=${p.domain}`;
     return `<a class="rp-btn" href="${url}" target="_blank" title="${p.name}">
       <img src="${fav}" alt="${p.name}">
@@ -3023,11 +3036,9 @@ function renderResultPlatforms(title) {
   </div>`;
 
   const pirateItems = unofficialPlatforms.map(p => {
-    const url = p.url.replace('{q}', q).replace('{q_es}', q_es).replace('{slug}', slug).replace('{type}', type);
+    const url = p.url.replace('{q}', q).replace('{q_es}', q_es).replace('{slug}', slug).replace('{type}', type).replace('{type_la}', type_la).replace('{slug_year}', slug_year);
     const fav = faviconOverrides[p.domain] || `https://www.google.com/s2/favicons?sz=64&domain=${p.domain}`;
-    const action = p.noEmbed
-      ? `document.getElementById('pirateMenu').style.display='none';window.open('${url.replace(/'/g,"\\'")}','_blank')`
-      : `document.getElementById('pirateMenu').style.display='none';openEpisodePlayer('${url.replace(/'/g,"\\'")}','${(currentDetailTitle||'').replace(/'/g,"\\'")}','${p.name}')`;
+    const action = `document.getElementById('pirateMenu').style.display='none';window.open('${url.replace(/'/g,"\\'")}','_blank')`;
     return `<button onclick="${action}" title="${p.name}"
       style="background:var(--bg3);border:1px solid var(--border2);border-radius:14px;padding:7px 10px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;"
       onmouseover="this.style.background='var(--acc-lo)';this.style.borderColor='var(--accent)';this.style.transform='translateY(-1px)'"
@@ -4398,7 +4409,6 @@ function snNavigate(dir) {
 function enableSpatialNav() {
   if (_snEnabled) return;
   _snEnabled = true;
-
   document.addEventListener('keydown', _snKeyHandler);
   // Focus first element
   setTimeout(() => {
@@ -4417,6 +4427,12 @@ function disableSpatialNav() {
 }
 
 function _snKeyHandler(e) {
+  // Debug: mostrar en pantalla qué tecla se presionó
+  const dbg = document.getElementById('snDebug');
+  if (dbg) {
+    dbg.textContent = `key="${e.key}" keyCode=${e.keyCode} which=${e.which} code="${e.code}"`;
+    dbg.style.display = 'block';
+  }
   if (!_tvMode) return;
 
   // Mapear keyCodes de controles remotos de TV a teclas estándar
@@ -4482,6 +4498,17 @@ const _snObserver = new MutationObserver(() => {
   }
 });
 _snObserver.observe(document.getElementById('container'), { childList: true, subtree: false });
+
+// Debug global: capturar teclas siempre para ver keycodes en TV
+document.addEventListener('keydown', (e) => {
+  const dbg = document.getElementById('snDebug');
+  if (dbg) {
+    dbg.textContent = `key="${e.key}" kc=${e.keyCode} code="${e.code}"`;
+    dbg.style.display = 'block';
+    clearTimeout(dbg._t);
+    dbg._t = setTimeout(() => { dbg.style.display = 'none'; }, 4000);
+  }
+}, true); // capture phase para verlo siempre
 
 // Apply on load
 applyTvMode();
@@ -4632,31 +4659,43 @@ async function checkVimeusNewContent() {
     const prevNotifs = getSavedNotifs();
     const prevIds = new Set(prevNotifs.map(n => `${n.type}_${n.tmdb_id}`));
 
+    // Cruzar con favoritos — solo notificar de lo que el usuario tiene guardado
+    const favs = getFavorites();
+    const favMovieIds = new Set(favs.filter(f => f.type === 'movie').map(f => String(f.id)));
+    const favTvIds    = new Set(favs.filter(f => f.type === 'tv').map(f => String(f.id)));
+
     const newItems = [];
 
-    (moviesRes?.data?.movies || []).slice(0, 10).forEach(m => {
+    (moviesRes?.data?.movies || []).slice(0, 20).forEach(m => {
       const key = `movie_${m.tmdb_id}`;
-      if (!prevIds.has(key)) newItems.push({ id: key, tmdb_id: m.tmdb_id, title: m.title, poster: m.poster, type: 'movie', synced_at: m.synced_at });
+      if (!prevIds.has(key) && favMovieIds.has(String(m.tmdb_id))) {
+        newItems.push({ id: key, tmdb_id: m.tmdb_id, title: m.title, poster: m.poster, type: 'movie', synced_at: m.synced_at });
+      }
     });
-    (seriesRes?.data?.series || []).slice(0, 10).forEach(s => {
+    (seriesRes?.data?.series || []).slice(0, 20).forEach(s => {
       const key = `series_${s.tmdb_id}`;
-      if (!prevIds.has(key)) newItems.push({ id: key, tmdb_id: s.tmdb_id, title: s.title, poster: s.poster, type: 'series', synced_at: s.synced_at });
+      if (!prevIds.has(key) && favTvIds.has(String(s.tmdb_id))) {
+        newItems.push({ id: key, tmdb_id: s.tmdb_id, title: s.title, poster: s.poster, type: 'series', synced_at: s.synced_at });
+      }
     });
-    (animesRes?.data?.animes || []).slice(0, 10).forEach(a => {
+    // Animes: también cruzar con favoritos tv
+    (animesRes?.data?.animes || []).slice(0, 20).forEach(a => {
       const key = `anime_${a.tmdb_id}`;
-      if (!prevIds.has(key)) newItems.push({ id: key, tmdb_id: a.tmdb_id, title: a.title, poster: a.poster, type: 'anime', synced_at: a.synced_at });
+      if (!prevIds.has(key) && favTvIds.has(String(a.tmdb_id))) {
+        newItems.push({ id: key, tmdb_id: a.tmdb_id, title: a.title, poster: a.poster, type: 'anime', synced_at: a.synced_at });
+      }
     });
 
     if (newItems.length > 0 || prevNotifs.length === 0) {
-      // Primera vez: guardar sin marcar como nuevo (no spamear)
+      // Primera vez: no spamear, guardar todo como visto
       if (prevNotifs.length === 0) {
-        const allItems = [
-          ...(moviesRes?.data?.movies || []).slice(0, 5).map(m => ({ id: `movie_${m.tmdb_id}`, tmdb_id: m.tmdb_id, title: m.title, poster: m.poster, type: 'movie', synced_at: m.synced_at })),
-          ...(seriesRes?.data?.series || []).slice(0, 5).map(s => ({ id: `series_${s.tmdb_id}`, tmdb_id: s.tmdb_id, title: s.title, poster: s.poster, type: 'series', synced_at: s.synced_at })),
-          ...(animesRes?.data?.animes || []).slice(0, 5).map(a => ({ id: `anime_${a.tmdb_id}`, tmdb_id: a.tmdb_id, title: a.title, poster: a.poster, type: 'anime', synced_at: a.synced_at })),
+        const allFavItems = [
+          ...(moviesRes?.data?.movies || []).filter(m => favMovieIds.has(String(m.tmdb_id))).slice(0, 10).map(m => ({ id: `movie_${m.tmdb_id}`, tmdb_id: m.tmdb_id, title: m.title, poster: m.poster, type: 'movie', synced_at: m.synced_at })),
+          ...(seriesRes?.data?.series || []).filter(s => favTvIds.has(String(s.tmdb_id))).slice(0, 10).map(s => ({ id: `series_${s.tmdb_id}`, tmdb_id: s.tmdb_id, title: s.title, poster: s.poster, type: 'series', synced_at: s.synced_at })),
+          ...(animesRes?.data?.animes || []).filter(a => favTvIds.has(String(a.tmdb_id))).slice(0, 10).map(a => ({ id: `anime_${a.tmdb_id}`, tmdb_id: a.tmdb_id, title: a.title, poster: a.poster, type: 'anime', synced_at: a.synced_at })),
         ];
-        saveNotifs(allItems);
-        saveSeenNotifs(allItems.map(n => n.id)); // marcar todos como vistos la primera vez
+        saveNotifs(allFavItems);
+        saveSeenNotifs(allFavItems.map(n => n.id));
       } else {
         const updated = [...newItems, ...prevNotifs];
         saveNotifs(updated);
@@ -5194,5 +5233,9 @@ handleUrlParams().then(handled => {
   checkAlertsAgainstVimeus();
 });
 </script>
+<div id="snDebug" style="display:none;position:fixed;bottom:60px;left:10px;z-index:99999;
+  background:rgba(0,0,0,.9);color:#0f0;font-family:monospace;font-size:13px;
+  padding:8px 12px;border-radius:8px;border:1px solid #0f0;pointer-events:none;max-width:90vw;">
+</div>
 </body>
 </html>

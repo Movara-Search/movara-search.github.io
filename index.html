@@ -508,8 +508,7 @@ body {
 }
 .channel-card:hover .channel-gear-btn { opacity: 1; }
 .channel-gear-btn:hover { background: var(--accent) !important; color: #000 !important; }
-.channel-card:hover .channel-x-btn { opacity: 1 !important; }
-.channel-x-btn:hover { background: #e84040 !important; color: #fff !important; }
+
 .channel-add-btn {
   aspect-ratio: 2/3;
   border-radius: 12px;
@@ -5070,6 +5069,23 @@ function renderYtCard(v) {
   </div>`;
 }
 
+// Default channels list
+const DEFAULT_CHANNELS = [
+    { name:'DSports',       url:'https://angulismotv-dnh.pages.dev/transmision?c=DSports&o=0',       img:'https://raw.githubusercontent.com/Movara-Search/movara-search.github.io/main/logos/DSports.png',       imgIsPng:true, bg:'#00529b' },
+    { name:'DSports 2',     url:'https://angulismotv-dnh.pages.dev/transmision?c=DSports+2&o=0',     img:'https://raw.githubusercontent.com/Movara-Search/movara-search.github.io/main/logos/DSports%202.png',   imgIsPng:true, bg:'#003f78' },
+    { name:'DSports+',      url:'https://angulismotv-dnh.pages.dev/transmision?c=DSports+Plus&o=0',  img:'https://raw.githubusercontent.com/Movara-Search/movara-search.github.io/main/logos/DSports%2B.png',    imgIsPng:true, bg:'#002d5c' },
+    { name:'ESPN',          url:'https://angulismotv-dnh.pages.dev/transmision?c=ESPN+1&o=0',        img:'https://raw.githubusercontent.com/Movara-Search/movara-search.github.io/main/logos/ESPN%201.png',      imgIsPng:true, bg:'#cc0000' },
+    { name:'ESPN 2',        url:'https://angulismotv-dnh.pages.dev/transmision?c=ESPN+2&o=0',        img:'https://raw.githubusercontent.com/Movara-Search/movara-search.github.io/main/logos/ESPN%202.png',      imgIsPng:true, bg:'#aa0000' },
+    { name:'ESPN 3',        url:'https://angulismotv-dnh.pages.dev/transmision?c=ESPN+3&o=0',        img:'https://raw.githubusercontent.com/Movara-Search/movara-search.github.io/main/logos/ESPN%203.png',      imgIsPng:true, bg:'#880000' },
+    { name:'ESPN Premium',  url:'https://angulismotv-dnh.pages.dev/transmision?c=ESPN+Premium&o=0',  img:'https://raw.githubusercontent.com/Movara-Search/movara-search.github.io/main/logos/ESPN%20Premium.png',imgIsPng:true, bg:'#6b0000' },
+    { name:'FOX Sports',    url:'https://angulismotv-dnh.pages.dev/transmision?c=FOX+Sports&o=0',    img:'https://raw.githubusercontent.com/Movara-Search/movara-search.github.io/main/logos/FOX%20Sports.png',  imgIsPng:true, bg:'#003580' },
+    { name:'FOX Sports 2',  url:'https://angulismotv-dnh.pages.dev/transmision?c=FOX+Sports+2&o=0',  img:'https://raw.githubusercontent.com/Movara-Search/movara-search.github.io/main/logos/FOX%20Sports%202.png', imgIsPng:true, bg:'#002a66' },
+    { name:'FOX Sports 3',  url:'https://angulismotv-dnh.pages.dev/transmision?c=FOX+Sports+3&o=0',  img:'https://raw.githubusercontent.com/Movara-Search/movara-search.github.io/main/logos/FOX%20Sports%203.png', imgIsPng:true, bg:'#001f4d' },
+    { name:'Movistar',      url:'https://angulismotv-dnh.pages.dev/transmision?c=MOVISTAR&o=0',      img:'https://raw.githubusercontent.com/Movara-Search/movara-search.github.io/main/logos/Movistar.png',      imgIsPng:true, bg:'#019df4' },
+    { name:'TNT Sports',    url:'https://angulismotv-dnh.pages.dev/transmision?c=TNT+Sports&o=0',    img:'https://raw.githubusercontent.com/Movara-Search/movara-search.github.io/main/logos/TNT%20Sports.png',  imgIsPng:true, bg:'#0033a0' },
+    { name:'TyC Sports',    url:'https://angulismotv-dnh.pages.dev/transmision?c=TyC+Sports&o=0',    img:'https://raw.githubusercontent.com/Movara-Search/movara-search.github.io/main/logos/TyC%20Sports.png',  imgIsPng:true, bg:'#e30613' },
+];
+
 function showCanales() {
   // Update tab active state
   ['tabMovie','tabTv','tabCategories','tabCanales'].forEach(id => {
@@ -5085,22 +5101,7 @@ function showCanales() {
 
   const container = document.getElementById('container');
 
-  // Default channels list
-  const DEFAULT_CHANNELS = [
-    { name:'DSports',       url:'https://angulismotv-dnh.pages.dev/transmision?c=DSports&o=0',       img:'https://raw.githubusercontent.com/Movara-Search/movara-search.github.io/main/logos/DSports.png',       imgIsPng:true, bg:'#00529b' },
-    { name:'DSports 2',     url:'https://angulismotv-dnh.pages.dev/transmision?c=DSports+2&o=0',     img:'https://raw.githubusercontent.com/Movara-Search/movara-search.github.io/main/logos/DSports%202.png',   imgIsPng:true, bg:'#003f78' },
-    { name:'DSports+',      url:'https://angulismotv-dnh.pages.dev/transmision?c=DSports+Plus&o=0',  img:'https://raw.githubusercontent.com/Movara-Search/movara-search.github.io/main/logos/DSports%2B.png',    imgIsPng:true, bg:'#002d5c' },
-    { name:'ESPN',          url:'https://angulismotv-dnh.pages.dev/transmision?c=ESPN+1&o=0',        img:'https://raw.githubusercontent.com/Movara-Search/movara-search.github.io/main/logos/ESPN%201.png',      imgIsPng:true, bg:'#cc0000' },
-    { name:'ESPN 2',        url:'https://angulismotv-dnh.pages.dev/transmision?c=ESPN+2&o=0',        img:'https://raw.githubusercontent.com/Movara-Search/movara-search.github.io/main/logos/ESPN%202.png',      imgIsPng:true, bg:'#aa0000' },
-    { name:'ESPN 3',        url:'https://angulismotv-dnh.pages.dev/transmision?c=ESPN+3&o=0',        img:'https://raw.githubusercontent.com/Movara-Search/movara-search.github.io/main/logos/ESPN%203.png',      imgIsPng:true, bg:'#880000' },
-    { name:'ESPN Premium',  url:'https://angulismotv-dnh.pages.dev/transmision?c=ESPN+Premium&o=0',  img:'https://raw.githubusercontent.com/Movara-Search/movara-search.github.io/main/logos/ESPN%20Premium.png',imgIsPng:true, bg:'#6b0000' },
-    { name:'FOX Sports',    url:'https://angulismotv-dnh.pages.dev/transmision?c=FOX+Sports&o=0',    img:'https://raw.githubusercontent.com/Movara-Search/movara-search.github.io/main/logos/FOX%20Sports.png',  imgIsPng:true, bg:'#003580' },
-    { name:'FOX Sports 2',  url:'https://angulismotv-dnh.pages.dev/transmision?c=FOX+Sports+2&o=0',  img:'https://raw.githubusercontent.com/Movara-Search/movara-search.github.io/main/logos/FOX%20Sports%202.png', imgIsPng:true, bg:'#002a66' },
-    { name:'FOX Sports 3',  url:'https://angulismotv-dnh.pages.dev/transmision?c=FOX+Sports+3&o=0',  img:'https://raw.githubusercontent.com/Movara-Search/movara-search.github.io/main/logos/FOX%20Sports%203.png', imgIsPng:true, bg:'#001f4d' },
-    { name:'Movistar',      url:'https://angulismotv-dnh.pages.dev/transmision?c=MOVISTAR&o=0',      img:'https://raw.githubusercontent.com/Movara-Search/movara-search.github.io/main/logos/Movistar.png',      imgIsPng:true, bg:'#019df4' },
-    { name:'TNT Sports',    url:'https://angulismotv-dnh.pages.dev/transmision?c=TNT+Sports&o=0',    img:'https://raw.githubusercontent.com/Movara-Search/movara-search.github.io/main/logos/TNT%20Sports.png',  imgIsPng:true, bg:'#0033a0' },
-    { name:'TyC Sports',    url:'https://angulismotv-dnh.pages.dev/transmision?c=TyC+Sports&o=0',    img:'https://raw.githubusercontent.com/Movara-Search/movara-search.github.io/main/logos/TyC%20Sports.png',  imgIsPng:true, bg:'#e30613' },
-  ];
+  // Default channels list loaded from global scope
 
   // Load custom channels from localStorage from localStorage
   function getCustomChannels() {
@@ -5151,7 +5152,7 @@ function showCanales() {
     renderChannels();
   };
 
-  function renderChannels() {
+  window.renderChannels = function() {
     const customChs = getCustomChannels();
     const deletedDefaults = new Set(JSON.parse(localStorage.getItem('movara_ch_deleted')||'[]'));
     const allChs = [...DEFAULT_CHANNELS.filter((_,i) => !deletedDefaults.has(i)), ...customChs];
@@ -5161,9 +5162,7 @@ function showCanales() {
 
     const filteredDefaults = DEFAULT_CHANNELS.map((ch,i) => ({...ch, _origIdx:i})).filter((_,i) => !deletedDefaults.has(i));
     const allChsWithIdx = [...filteredDefaults, ...customChs.map(ch => ({...ch, _origIdx:-1}))]
-      .sort((a,b) => _chSortAZ
-        ? a.name.localeCompare(b.name, 'es', {sensitivity:'base'})
-        : b.name.localeCompare(a.name, 'es', {sensitivity:'base'}));
+      .sort((a,b) => _chSortAZ ? a.name.localeCompare(b.name, 'es', {sensitivity:'base'}) : 0);
     // Build a map of custom channel original indices for removal
     let _customCounter = 0;
     allChsWithIdx.forEach(ch => { if (ch._origIdx === -1) ch._customIdx = _customCounter++; });
@@ -5172,11 +5171,10 @@ function showCanales() {
       const isCustom = ch._origIdx === -1;
       const customIdx = isCustom ? ch._customIdx : -1;
       const origIdx = ch._origIdx;
-      const card = document.createElement('a');
+      const card = document.createElement('div');
       card.className = 'channel-card';
-      card.href = ch.url;
-      card.target = '_blank';
-      card.rel = 'noopener';
+      card.style.cursor = 'pointer';
+      card.addEventListener('click', () => { window.open(ch.url, '_blank'); });
       // Background: custom image or gradient from color
       if (ch.img) {
         if (ch.imgIsPng) {
@@ -5197,16 +5195,21 @@ function showCanales() {
       } else {
         card.style.backgroundImage = `radial-gradient(circle at 40% 35%, ${hexToRgba(ch.bg||'#1a1a2e', 0.9)}, ${darkenHex(ch.bg||'#1a1a2e')})`;
       }
-      card.innerHTML = `
-        <button class="channel-gear-btn" title="Cambiar imagen">⚙</button>
-        <div class="channel-card-name">${ch.name}</div>
-        <span class="channel-x-btn" style="position:absolute;top:6px;left:6px;z-index:2;background:rgba(0,0,0,.55);border-radius:50%;width:26px;height:26px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .13s;color:rgba(255,255,255,.7);" title="Eliminar">✕</span>`;
-
-      // Gear click: change image
-      card.querySelector('.channel-gear-btn').addEventListener('click', (e) => {
-        e.preventDefault(); e.stopPropagation();
-        showImageModal(idx, ch, isCustom, customIdx);
+      const gearBtn = document.createElement('button');
+      gearBtn.className = 'channel-gear-btn';
+      gearBtn.title = 'Configurar canal';
+      gearBtn.textContent = '⚙';
+      gearBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        showImageModal(origIdx, ch, isCustom, customIdx);
       });
+
+      const nameDiv = document.createElement('div');
+      nameDiv.className = 'channel-card-name';
+      nameDiv.textContent = ch.name;
+
+      card.appendChild(gearBtn);
+      card.appendChild(nameDiv);
 
       grid.appendChild(card);
     });
@@ -5245,7 +5248,7 @@ function showCanales() {
       <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:28px;width:390px;max-width:93vw;">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
           <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--t1);flex:1;">⚙ ${ch.name}</div>
-          ${!isCustom ? '' : `<button onclick="removeCustomChannel(${customIdx});document.getElementById('chImgModal').remove();" style="background:none;border:1px solid #e84040;color:#e84040;border-radius:8px;padding:5px 10px;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">Eliminar canal</button>`}
+
         </div>
 
         <!-- Color de fondo -->
@@ -5398,12 +5401,12 @@ function showCanales() {
       const deleted = JSON.parse(localStorage.getItem('movara_ch_deleted')||'[]');
       if (!deleted.includes(idx)) { deleted.push(idx); localStorage.setItem('movara_ch_deleted', JSON.stringify(deleted)); }
     }
-    renderChannels();
+    window.renderChannels();
   };
 
   window.restoreDefaultChannels = function() {
     localStorage.removeItem('movara_ch_deleted');
-    renderChannels();
+    window.renderChannels();
     showToast('↺ Canales default restaurados');
   };
 
@@ -5415,7 +5418,7 @@ function showCanales() {
     if (label) label.textContent = _chSortAZ ? 'A–Z' : 'Z–A';
     if (btn) btn.style.borderColor = _chSortAZ ? 'var(--accent)' : 'var(--border2)';
     if (btn) btn.style.color = _chSortAZ ? 'var(--accent)' : 'var(--t2)';
-    renderChannels();
+    window.renderChannels();
   };
 
   window.showAddChannelModal = function() {
@@ -5455,7 +5458,7 @@ function showCanales() {
     chs.push({ name, url, logo: logo || '', bg });
     saveCustomChannels(chs);
     document.getElementById('addChannelModal')?.remove();
-    renderChannels();
+    window.renderChannels();
   };
 
   container.innerHTML = `
@@ -5466,6 +5469,7 @@ function showCanales() {
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="14" y2="12"/><line x1="4" y1="18" x2="9" y2="18"/></svg>
           <span id="chSortLabel">A–Z</span>
         </button>
+        <button id="gestionarBtn" onclick="toggleGestionar()" style="background:var(--bg3);border:1px solid var(--border2);color:var(--t2);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:12px;font-family:'DM Sans',sans-serif;transition:all .13s;">✏ Gestionar</button>
         <button onclick="restoreDefaultChannels()" style="background:none;border:1px solid var(--border2);color:var(--t3);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:12px;font-family:'DM Sans',sans-serif;transition:all .13s;margin-left:auto;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--t3)'">↺ Restaurar default</button>
       </div>
       <div class="channel-grid" id="channelGrid"></div>
@@ -5480,6 +5484,59 @@ function showCanales() {
   }
   renderChannels();
 }
+
+window.toggleGestionar = function() {
+  const existing = document.getElementById('gestionarModal');
+  if (existing) { existing.remove(); return; }
+
+  const modal = document.createElement('div');
+  modal.id = 'gestionarModal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9999;display:flex;align-items:center;justify-content:center;';
+
+  const customChs = JSON.parse(localStorage.getItem('movara_channels')||'[]');
+  const deletedDefaults = new Set(JSON.parse(localStorage.getItem('movara_ch_deleted')||'[]'));
+  const activeDefaults = DEFAULT_CHANNELS.map((ch,i) => ({...ch, _i:i})).filter((_,i) => !deletedDefaults.has(i));
+
+  const allRows = [
+    ...activeDefaults.map(ch => `
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);">
+        <span style="flex:1;font-size:13px;color:var(--t1);font-family:'DM Sans',sans-serif;">${ch.name}</span>
+        <span style="font-size:10px;color:var(--t3);font-family:'DM Mono',monospace;">DEFAULT</span>
+        <button onclick="deleteChFromList('default',${ch._i})" style="background:none;border:1px solid #e84040;color:#e84040;border-radius:6px;padding:3px 10px;cursor:pointer;font-size:12px;font-family:'DM Sans',sans-serif;">Eliminar</button>
+      </div>`),
+    ...customChs.map((ch,i) => `
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);">
+        <span style="flex:1;font-size:13px;color:var(--t1);font-family:'DM Sans',sans-serif;">${ch.name}</span>
+        <span style="font-size:10px;color:var(--t3);font-family:'DM Mono',monospace;">CUSTOM</span>
+        <button onclick="deleteChFromList('custom',${i})" style="background:none;border:1px solid #e84040;color:#e84040;border-radius:6px;padding:3px 10px;cursor:pointer;font-size:12px;font-family:'DM Sans',sans-serif;">Eliminar</button>
+      </div>`)
+  ].join('');
+
+  modal.innerHTML = `
+    <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:24px;width:400px;max-width:92vw;max-height:80vh;display:flex;flex-direction:column;">
+      <div style="display:flex;align-items:center;margin-bottom:16px;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--t1);flex:1;">Gestionar canales</div>
+        <button onclick="document.getElementById('gestionarModal').remove()" style="background:none;border:none;color:var(--t3);font-size:20px;cursor:pointer;">✕</button>
+      </div>
+      <div style="overflow-y:auto;flex:1;">${allRows || '<div style="color:var(--t3);font-size:13px;padding:16px 0;">No hay canales.</div>'}</div>
+    </div>`;
+  document.body.appendChild(modal);
+  modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+};
+
+window.deleteChFromList = function(type, idx) {
+  if (type === 'default') {
+    const deleted = JSON.parse(localStorage.getItem('movara_ch_deleted')||'[]');
+    if (!deleted.includes(idx)) deleted.push(idx);
+    localStorage.setItem('movara_ch_deleted', JSON.stringify(deleted));
+  } else {
+    const chs = JSON.parse(localStorage.getItem('movara_channels')||'[]');
+    chs.splice(idx, 1);
+    localStorage.setItem('movara_channels', JSON.stringify(chs));
+  }
+  document.getElementById('gestionarModal')?.remove();
+  if (window.renderChannels) window.renderChannels();
+};
 
 async function showHistorias() {
   const container = document.getElementById('container');

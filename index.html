@@ -5104,23 +5104,31 @@ function showCanales() {
 
   // Load custom channels from localStorage from localStorage
   function getCustomChannels() {
-    try { return JSON.parse(localStorage.getItem('movara_channels') || '[]'); } catch(e) { return []; }
+    try {
+      const chs = JSON.parse(localStorage.getItem('movara_channels') || '[]');
+      // Remove any custom channel whose name matches a default channel name
+      const defaultNames = new Set(DEFAULT_CHANNELS.map(c => c.name.toLowerCase().trim()));
+      return chs.filter(c => !defaultNames.has((c.name||'').toLowerCase().trim()));
+    } catch(e) { return []; }
   }
   function saveCustomChannels(arr) {
     localStorage.setItem('movara_channels', JSON.stringify(arr));
   }
 
-  // Apply saved overrides to default channels
+  // Apply saved overrides to default channels (keyed by name for safety)
   const _overrides = JSON.parse(localStorage.getItem('movara_ch_overrides')||'{}');
-  Object.keys(_overrides).forEach(i => {
-    if (DEFAULT_CHANNELS[i]) {
-      const ov = _overrides[i];
-      if (typeof ov === 'string') {
-        DEFAULT_CHANNELS[i].img = ov; // legacy
-      } else if (ov) {
-        if (ov.dataUrl) { DEFAULT_CHANNELS[i].img = ov.dataUrl; DEFAULT_CHANNELS[i].imgIsPng = ov.isPng; }
-        if (ov.bg) DEFAULT_CHANNELS[i].bg = ov.bg;
-      }
+  Object.keys(_overrides).forEach(key => {
+    // Support both old index-based keys and new name-based keys
+    const ch = isNaN(key)
+      ? DEFAULT_CHANNELS.find(c => c.name === key)
+      : DEFAULT_CHANNELS[parseInt(key)];
+    if (!ch) return;
+    const ov = _overrides[key];
+    if (typeof ov === 'string') {
+      ch.img = ov;
+    } else if (ov) {
+      if (ov.dataUrl) { ch.img = ov.dataUrl; ch.imgIsPng = ov.isPng; }
+      if (ov.bg) ch.bg = ov.bg;
     }
   });
 
@@ -5192,7 +5200,7 @@ function showCanales() {
       card.innerHTML = `
         <button class="channel-gear-btn" title="Cambiar imagen">⚙</button>
         <div class="channel-card-name">${ch.name}</div>
-        <button class="channel-x-btn" style="position:absolute;top:6px;left:6px;z-index:2;background:rgba(0,0,0,.55);border:none;color:rgba(255,255,255,.7);border-radius:50%;width:26px;height:26px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .13s;" title="Eliminar">✕</button>`;
+        <span class="channel-x-btn" style="position:absolute;top:6px;left:6px;z-index:2;background:rgba(0,0,0,.55);border-radius:50%;width:26px;height:26px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .13s;color:rgba(255,255,255,.7);" title="Eliminar">✕</span>`;
 
       // Gear click: change image
       card.querySelector('.channel-gear-btn').addEventListener('click', (e) => {
@@ -5343,7 +5351,9 @@ function showCanales() {
       saveCustomChannels(chs);
     } else {
       const overrides = JSON.parse(localStorage.getItem('movara_ch_overrides')||'{}');
-      delete overrides[idx];
+      const chName = DEFAULT_CHANNELS[idx]?.name || String(idx);
+      delete overrides[chName];
+      delete overrides[idx]; // clean legacy
       localStorage.setItem('movara_ch_overrides', JSON.stringify(overrides));
       delete DEFAULT_CHANNELS[idx].img;
       delete DEFAULT_CHANNELS[idx].imgIsPng;
@@ -5364,9 +5374,11 @@ function showCanales() {
       saveCustomChannels(chs);
     } else {
       const overrides = JSON.parse(localStorage.getItem('movara_ch_overrides')||'{}');
-      if (!overrides[idx] || typeof overrides[idx] === 'string') overrides[idx] = {};
-      if (imgData) { overrides[idx].dataUrl = imgData.dataUrl; overrides[idx].isPng = imgData.isPng; }
-      if (newBg) { overrides[idx].bg = newBg; DEFAULT_CHANNELS[idx].bg = newBg; }
+      // Use channel name as key to avoid index mismatch after sort
+      const chName = DEFAULT_CHANNELS[idx]?.name || String(idx);
+      if (!overrides[chName] || typeof overrides[chName] === 'string') overrides[chName] = {};
+      if (imgData) { overrides[chName].dataUrl = imgData.dataUrl; overrides[chName].isPng = imgData.isPng; }
+      if (newBg) { overrides[chName].bg = newBg; DEFAULT_CHANNELS[idx].bg = newBg; }
       localStorage.setItem('movara_ch_overrides', JSON.stringify(overrides));
       if (imgData) { DEFAULT_CHANNELS[idx].img = imgData.dataUrl; DEFAULT_CHANNELS[idx].imgIsPng = imgData.isPng; }
     }

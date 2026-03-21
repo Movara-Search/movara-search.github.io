@@ -5107,9 +5107,12 @@ function showCanales() {
   function getCustomChannels() {
     try {
       const chs = JSON.parse(localStorage.getItem('movara_channels') || '[]');
-      // Remove any custom channel whose name matches a default channel name
-      const defaultNames = new Set(DEFAULT_CHANNELS.map(c => c.name.toLowerCase().trim()));
-      return chs.filter(c => !defaultNames.has((c.name||'').toLowerCase().trim()));
+      // Only block names that match an ACTIVE (non-deleted) default channel
+      const deletedIdx = new Set(JSON.parse(localStorage.getItem('movara_ch_deleted')||'[]'));
+      const activeDefaultNames = new Set(
+        DEFAULT_CHANNELS.filter((_,i) => !deletedIdx.has(i)).map(c => c.name.toLowerCase().trim())
+      );
+      return chs.filter(c => !activeDefaultNames.has((c.name||'').toLowerCase().trim()));
     } catch(e) { return []; }
   }
   function saveCustomChannels(arr) {
@@ -5248,7 +5251,12 @@ function showCanales() {
       <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:28px;width:390px;max-width:93vw;">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
           <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--t1);flex:1;">⚙ ${ch.name}</div>
+        </div>
 
+        <!-- Link del canal -->
+        <div style="margin-bottom:14px;">
+          <div style="font-size:11px;color:var(--t3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em;">Link del canal</div>
+          <input id="chLinkUrl" value="${ch.url||''}" placeholder="https://angulismotv-dnh.pages.dev/transmision?c=..." style="width:100%;box-sizing:border-box;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;color:var(--t1);padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:12px;outline:none;">
         </div>
 
         <!-- Color de fondo -->
@@ -5367,6 +5375,7 @@ function showCanales() {
   window.applyChannelImg = function(idx, isCustom, customIdx) {
     const imgData = window._chImgData;
     const newBg = document.getElementById('chBgColor')?.value || null;
+    const newLink = document.getElementById('chLinkUrl')?.value.trim() || null;
     document.getElementById('chImgModal')?.remove();
     window._chImgData = null;
 
@@ -5374,6 +5383,7 @@ function showCanales() {
       const chs = getCustomChannels();
       if (imgData) { chs[customIdx].img = imgData.dataUrl; chs[customIdx].imgIsPng = imgData.isPng; }
       if (newBg) chs[customIdx].bg = newBg;
+      if (newLink) chs[customIdx].url = newLink;
       saveCustomChannels(chs);
     } else {
       const overrides = JSON.parse(localStorage.getItem('movara_ch_overrides')||'{}');
@@ -5384,6 +5394,7 @@ function showCanales() {
       if (newBg) { overrides[chName].bg = newBg; DEFAULT_CHANNELS[idx].bg = newBg; }
       localStorage.setItem('movara_ch_overrides', JSON.stringify(overrides));
       if (imgData) { DEFAULT_CHANNELS[idx].img = imgData.dataUrl; DEFAULT_CHANNELS[idx].imgIsPng = imgData.isPng; }
+      if (newLink) { overrides[chName].url = newLink; DEFAULT_CHANNELS[idx].url = newLink; }
     }
     renderChannels();
   };

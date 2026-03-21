@@ -463,6 +463,63 @@ body {
 }
 .ep-plat-btn:hover { border-color: var(--accent); color: var(--t1); }
 .ep-plat-btn.active { background: var(--acc-lo); border-color: var(--accent); color: var(--accent); }
+.channel-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 4px;
+}
+.channel-card {
+  aspect-ratio: 2/3;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 0 14px;
+  cursor: pointer;
+  transition: transform .15s, box-shadow .15s;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.08);
+  text-decoration: none;
+  background-size: cover;
+  background-position: center;
+}
+.channel-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,.85) 0%, rgba(0,0,0,.1) 60%, transparent 100%);
+}
+.channel-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,.5); border-color: var(--accent); }
+.channel-card-name {
+  position: relative; z-index: 1;
+  font-size: 12px; font-weight: 700; color: #fff;
+  text-align: center; text-shadow: 0 1px 6px rgba(0,0,0,.9);
+  padding: 0 8px; line-height: 1.3;
+}
+.channel-gear-btn {
+  position: absolute; top: 6px; right: 6px; z-index: 2;
+  background: rgba(0,0,0,.55); border: none; border-radius: 50%;
+  width: 26px; height: 26px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: rgba(255,255,255,.7); font-size: 13px;
+  transition: background .13s, color .13s; opacity: 0;
+}
+.channel-card:hover .channel-gear-btn { opacity: 1; }
+.channel-gear-btn:hover { background: var(--accent) !important; color: #000 !important; }
+.channel-card:hover .channel-x-btn { opacity: 1 !important; }
+.channel-x-btn:hover { background: #e84040 !important; color: #fff !important; }
+.channel-add-btn {
+  aspect-ratio: 2/3;
+  border-radius: 12px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+  cursor: pointer; transition: all .15s;
+  border: 2px dashed var(--border2); background: transparent; color: var(--t3);
+  font-size: 12px; font-family: 'DM Sans', sans-serif;
+}
+.channel-add-btn:hover { border-color: var(--accent); color: var(--accent); }
+
 .cat-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -935,7 +992,62 @@ body {
   /* Buttons row */
   .trailer-btn { padding: 8px 12px; font-size: 12px; }
 
-  .cat-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .channel-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 4px;
+}
+.channel-card {
+  aspect-ratio: 2/3;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 0 14px;
+  cursor: pointer;
+  transition: transform .15s, box-shadow .15s;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.08);
+  text-decoration: none;
+  background-size: cover;
+  background-position: center;
+}
+.channel-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,.85) 0%, rgba(0,0,0,.1) 60%, transparent 100%);
+}
+.channel-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,.5); border-color: var(--accent); }
+.channel-card-name {
+  position: relative; z-index: 1;
+  font-size: 12px; font-weight: 700; color: #fff;
+  text-align: center; text-shadow: 0 1px 6px rgba(0,0,0,.9);
+  padding: 0 8px; line-height: 1.3;
+}
+.channel-gear-btn {
+  position: absolute; top: 6px; right: 6px; z-index: 2;
+  background: rgba(0,0,0,.55); border: none; border-radius: 50%;
+  width: 26px; height: 26px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: rgba(255,255,255,.7); font-size: 13px;
+  transition: background .13s, color .13s; opacity: 0;
+}
+.channel-card:hover .channel-gear-btn { opacity: 1; }
+.channel-gear-btn:hover { background: var(--accent) !important; color: #000 !important; }
+.channel-add-btn {
+  aspect-ratio: 2/3;
+  border-radius: 12px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+  cursor: pointer; transition: all .15s;
+  border: 2px dashed var(--border2); background: transparent; color: var(--t3);
+  font-size: 12px; font-family: 'DM Sans', sans-serif;
+}
+.channel-add-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.cat-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
   .cat-card { padding: 14px 8px; }
   .cat-card-emoji { font-size: 22px; }
   .cat-card-name { font-size: 11px; }
@@ -3756,7 +3868,7 @@ async function showHome(pushNav = true) {
       <button class="home-tab" id="tabMovie" onclick="setHomeType('movie')">🎬 Películas</button>
       <button class="home-tab" id="tabTv" onclick="setHomeType('tv')">📺 Series</button>
       <button class="home-tab" id="tabCategories" onclick="setHomeType('categories')">🎭 Categorías</button>
-      <button class="home-tab" id="tabHistorias" onclick="showHistorias()">📖 Historias</button>
+      <button class="home-tab" id="tabCanales" onclick="showCanales()">📡 Canales</button>
       <button class="sort-btn surprise-btn tip" onclick="surpriseMe()" data-tip="Te muestra una película o serie al azar" style="margin-left:auto;background:linear-gradient(135deg,#7c3aed,#db2777);border-color:transparent;color:#fff;padding:10px 22px;font-size:13px;">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
         <span>Sorpréndeme</span>
@@ -3804,7 +3916,7 @@ async function showHome(pushNav = true) {
 // ── setHomeType ──────────────────────────────────────────
 function setHomeType(type) {
   homeType = type;
-  ['tabMovie','tabTv','tabCategories'].forEach(id => {
+  ['tabMovie','tabTv','tabCategories','tabCanales'].forEach(id => {
     document.getElementById(id)?.classList.remove('active');
   });
   if (type === 'movie')      document.getElementById('tabMovie')?.classList.add('active');
@@ -4956,6 +5068,364 @@ function renderYtCard(v) {
       </div>
     </div>
   </div>`;
+}
+
+function showCanales() {
+  // Update tab active state
+  ['tabMovie','tabTv','tabCategories','tabCanales'].forEach(id => {
+    document.getElementById(id)?.classList.remove('active');
+  });
+  document.getElementById('tabCanales')?.classList.add('active');
+  homeType = 'canales';
+
+  // Hide sort/surprise
+  document.getElementById('sortBtn').style.display = 'none';
+  const surpriseBtn = document.querySelector('.surprise-btn');
+  if (surpriseBtn) surpriseBtn.style.display = 'none';
+
+  const container = document.getElementById('container');
+
+  // Default channels list
+  const DEFAULT_CHANNELS = [
+    // Deportes ESPN
+    { name:'ESPN 1',        url:'https://angulismotv-dnh.pages.dev/transmision?c=ESPN+1&o=0',       logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/ESPN_wordmark.svg/320px-ESPN_wordmark.svg.png',        bg:'#cc0000' },
+    { name:'ESPN 2',        url:'https://angulismotv-dnh.pages.dev/transmision?c=ESPN+2&o=0',       logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/ESPN_wordmark.svg/320px-ESPN_wordmark.svg.png',        bg:'#aa0000' },
+    { name:'ESPN 3',        url:'https://angulismotv-dnh.pages.dev/transmision?c=ESPN+3&o=0',       logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/ESPN_wordmark.svg/320px-ESPN_wordmark.svg.png',        bg:'#880000' },
+    { name:'ESPN Premium',  url:'https://angulismotv-dnh.pages.dev/transmision?c=ESPN+Premium&o=0', logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/ESPN_wordmark.svg/320px-ESPN_wordmark.svg.png',        bg:'#6b0000' },
+    // FOX Sports
+    { name:'FOX Sports',    url:'https://angulismotv-dnh.pages.dev/transmision?c=FOX+Sports&o=0',   logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Fox_Sports_logo_%282021%29.svg/320px-Fox_Sports_logo_%282021%29.svg.png',    bg:'#003580' },
+    { name:'FOX Sports 2',  url:'https://angulismotv-dnh.pages.dev/transmision?c=FOX+Sports+2&o=0', logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Fox_Sports_logo_%282021%29.svg/320px-Fox_Sports_logo_%282021%29.svg.png',    bg:'#002a66' },
+    { name:'FOX Sports 3',  url:'https://angulismotv-dnh.pages.dev/transmision?c=FOX+Sports+3&o=0', logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Fox_Sports_logo_%282021%29.svg/320px-Fox_Sports_logo_%282021%29.svg.png',    bg:'#001f4d' },
+    // TNT / DSports / TyC / Movistar
+    { name:'TNT Sports',    url:'https://angulismotv-dnh.pages.dev/transmision?c=TNT+Sports&o=0',   logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/TNT_Sports_logo.svg/320px-TNT_Sports_logo.svg.png',   bg:'#0033a0' },
+    { name:'DSports',       url:'https://angulismotv-dnh.pages.dev/transmision?c=DSports&o=0',      logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/DSports_logo.svg/320px-DSports_logo.svg.png',         bg:'#00529b' },
+    { name:'DSports 2',     url:'https://angulismotv-dnh.pages.dev/transmision?c=DSports+2&o=0',    logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/DSports_logo.svg/320px-DSports_logo.svg.png',         bg:'#003f78' },
+    { name:'TyC Sports',    url:'https://angulismotv-dnh.pages.dev/transmision?c=TyC+Sports&o=0',   logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/TyC_Sports_logo.svg/320px-TyC_Sports_logo.svg.png',   bg:'#e30613' },
+    { name:'Movistar',      url:'https://angulismotv-dnh.pages.dev/transmision?c=MOVISTAR&o=0',     logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Movistar_isotype.svg/200px-Movistar_isotype.svg.png',  bg:'#019df4' },
+  ];
+
+  // Load custom channels from localStorage
+  function getCustomChannels() {
+    try { return JSON.parse(localStorage.getItem('movara_channels') || '[]'); } catch(e) { return []; }
+  }
+  function saveCustomChannels(arr) {
+    localStorage.setItem('movara_channels', JSON.stringify(arr));
+  }
+
+  // Apply saved overrides to default channels
+  const _overrides = JSON.parse(localStorage.getItem('movara_ch_overrides')||'{}');
+  Object.keys(_overrides).forEach(i => {
+    if (DEFAULT_CHANNELS[i]) {
+      const ov = _overrides[i];
+      if (typeof ov === 'string') {
+        DEFAULT_CHANNELS[i].img = ov; // legacy
+      } else if (ov) {
+        if (ov.dataUrl) { DEFAULT_CHANNELS[i].img = ov.dataUrl; DEFAULT_CHANNELS[i].imgIsPng = ov.isPng; }
+        if (ov.bg) DEFAULT_CHANNELS[i].bg = ov.bg;
+      }
+    }
+  });
+
+  function getChImg(ch) {
+    if (ch.img) return ch.img;
+    return null;
+  }
+
+  function renderChannels() {
+    const customChs = getCustomChannels();
+    const deletedDefaults = new Set(JSON.parse(localStorage.getItem('movara_ch_deleted')||'[]'));
+    const allChs = [...DEFAULT_CHANNELS.filter((_,i) => !deletedDefaults.has(i)), ...customChs];
+    const grid = document.getElementById('channelGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+
+    const filteredDefaults = DEFAULT_CHANNELS.map((ch,i) => ({...ch, _origIdx:i})).filter((_,i) => !deletedDefaults.has(i));
+    const allChsWithIdx = [...filteredDefaults, ...customChs.map(ch => ({...ch, _origIdx:-1}))];
+    allChsWithIdx.forEach((ch, idx) => {
+      const isCustom = idx >= filteredDefaults.length;
+      const customIdx = idx - filteredDefaults.length;
+      const origIdx = ch._origIdx;
+      const card = document.createElement('a');
+      card.className = 'channel-card';
+      card.href = ch.url;
+      card.target = '_blank';
+      card.rel = 'noopener';
+      // Background: custom image or gradient from color
+      if (ch.img) {
+        if (ch.imgIsPng) {
+          // PNG: color gradient background + logo on top as separate layer
+          // Use background shorthand with multiple layers: logo on top, gradient below
+          const grad = `radial-gradient(circle at 40% 35%, ${hexToRgba(ch.bg||'#1a1a2e', 0.9)}, ${darkenHex(ch.bg||'#1a1a2e')})`;
+          card.style.backgroundImage = `url('${ch.img}'), ${grad}`;
+          card.style.backgroundSize = '85% auto, cover';
+          card.style.backgroundRepeat = 'no-repeat, no-repeat';
+          card.style.backgroundPosition = 'center 35%, center';
+        } else {
+          // JPG: full cover
+          card.style.backgroundImage = `url('${ch.img}')`;
+          card.style.backgroundSize = 'cover';
+          card.style.backgroundPosition = 'center';
+          card.style.backgroundRepeat = 'no-repeat';
+        }
+      } else {
+        card.style.backgroundImage = `radial-gradient(circle at 40% 35%, ${hexToRgba(ch.bg||'#1a1a2e', 0.9)}, ${darkenHex(ch.bg||'#1a1a2e')})`;
+      }
+      card.innerHTML = `
+        <button class="channel-gear-btn" title="Cambiar imagen">⚙</button>
+        <div class="channel-card-name">${ch.name}</div>
+        <button class="channel-x-btn" style="position:absolute;top:6px;left:6px;z-index:2;background:rgba(0,0,0,.55);border:none;color:rgba(255,255,255,.7);border-radius:50%;width:26px;height:26px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .13s;" title="Eliminar">✕</button>`;
+
+      // Gear click: change image
+      card.querySelector('.channel-gear-btn').addEventListener('click', (e) => {
+        e.preventDefault(); e.stopPropagation();
+        showImageModal(idx, ch, isCustom, customIdx);
+      });
+
+      grid.appendChild(card);
+    });
+
+    // Add button
+    const addBtn = document.createElement('button');
+    addBtn.className = 'channel-add-btn';
+    addBtn.innerHTML = '<div style="font-size:28px;">＋</div><div>Agregar canal</div>';
+    addBtn.onclick = () => showAddChannelModal();
+    grid.appendChild(addBtn);
+  }
+
+  function hexToRgba(hex, alpha) {
+    const r = parseInt(hex.slice(1,3),16)||26;
+    const g = parseInt(hex.slice(3,5),16)||26;
+    const b = parseInt(hex.slice(5,7),16)||46;
+    return `rgba(${r},${g},${b},${alpha})`;
+  }
+
+  function darkenHex(hex) {
+    const r = Math.max(0, parseInt(hex.slice(1,3),16)-50);
+    const g = Math.max(0, parseInt(hex.slice(3,5),16)-50);
+    const b = Math.max(0, parseInt(hex.slice(5,7),16)-50);
+    return `rgb(${r},${g},${b})`;
+  }
+
+  window.showImageModal = function(idx, ch, isCustom, customIdx) {
+    const existing = document.getElementById('chImgModal');
+    if (existing) existing.remove();
+    const modal = document.createElement('div');
+    modal.id = 'chImgModal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9999;display:flex;align-items:center;justify-content:center;';
+    const hasImg = !!ch.img;
+    const currentBg = ch.bg || '#cc0000';
+    modal.innerHTML = `
+      <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:28px;width:390px;max-width:93vw;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--t1);flex:1;">⚙ ${ch.name}</div>
+          ${!isCustom ? '' : `<button onclick="removeCustomChannel(${customIdx});document.getElementById('chImgModal').remove();" style="background:none;border:1px solid #e84040;color:#e84040;border-radius:8px;padding:5px 10px;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;">Eliminar canal</button>`}
+        </div>
+
+        <!-- Color de fondo -->
+        <div style="margin-bottom:14px;">
+          <div style="font-size:11px;color:var(--t3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em;">Color de fondo</div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <input type="color" id="chBgColor" value="${currentBg}" style="width:44px;height:44px;border:none;border-radius:10px;cursor:pointer;background:none;padding:2px;">
+            <div id="chBgPreview" style="flex:1;height:44px;border-radius:10px;transition:background .2s;"></div>
+          </div>
+        </div>
+
+        <div style="font-size:11px;color:var(--t3);margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em;">Imagen</div>
+        <div style="font-size:11px;color:var(--t3);margin-bottom:10px;">PNG → logo sobre fondo · JPG/URL → reemplaza la card</div>
+
+        <!-- URL input -->
+        <div style="display:flex;gap:8px;margin-bottom:12px;">
+          <input id="chImgUrl" placeholder="URL de imagen (jpg, png…)" style="flex:1;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;color:var(--t1);padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;">
+          <button onclick="loadChImgFromUrl()" style="background:var(--bg3);border:1px solid var(--border2);border-radius:10px;color:var(--t2);padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;white-space:nowrap;">Cargar</button>
+        </div>
+
+        <div style="text-align:center;font-size:11px;color:var(--t3);margin-bottom:10px;">— o subí un archivo —</div>
+
+        <!-- File drop zone -->
+        <label id="chImgDropZone" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+          border:2px dashed var(--border2);border-radius:12px;padding:16px;cursor:pointer;transition:border-color .13s;background:var(--bg3);">
+          <div id="chImgPreview" style="font-size:24px;">🖼️</div>
+          <div style="font-size:12px;color:var(--t2);text-align:center;">Click o arrastrá · <span style="color:var(--t3);">JPG o PNG</span></div>
+          <input id="chImgFile" type="file" accept="image/jpeg,image/png,image/webp" style="display:none;">
+        </label>
+
+        <!-- Buttons -->
+        <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;">
+          <button onclick="document.getElementById('chImgModal').remove()" style="flex:1;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;color:var(--t2);padding:10px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;">Cancelar</button>
+          ${hasImg ? `<button onclick="deleteChannelImg(${idx},${isCustom},${customIdx})" style="background:none;border:1px solid #e84040;border-radius:10px;color:#e84040;padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;">Quitar imagen</button>` : ''}
+          <button id="chImgApplyBtn" onclick="applyChannelImg(${idx},${isCustom},${customIdx})" style="flex:1;background:var(--accent);border:none;border-radius:10px;color:#000;padding:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .13s;">Aplicar</button>
+        </div>
+      </div>`;
+    document.body.appendChild(modal);
+    modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+
+    // Color picker live preview
+    const colorInput = document.getElementById('chBgColor');
+    const bgPreview = document.getElementById('chBgPreview');
+    function updateBgPreview(hex) {
+      const r = parseInt(hex.slice(1,3),16)||26, g = parseInt(hex.slice(3,5),16)||26, b = parseInt(hex.slice(5,7),16)||46;
+      const dark = `rgb(${Math.max(0,r-60)},${Math.max(0,g-60)},${Math.max(0,b-60)})`;
+      bgPreview.style.background = `radial-gradient(circle at 40% 35%, rgba(${r},${g},${b},.9), ${dark})`;
+    }
+    updateBgPreview(currentBg);
+    colorInput.addEventListener('input', () => updateBgPreview(colorInput.value));
+
+    const dropZone = document.getElementById('chImgDropZone');
+    const fileInput = document.getElementById('chImgFile');
+    const preview = document.getElementById('chImgPreview');
+    const applyBtn = document.getElementById('chImgApplyBtn');
+
+    function enableApply() {
+      applyBtn.disabled = false;
+      applyBtn.style.background = 'var(--accent)';
+      applyBtn.style.color = '#000';
+      applyBtn.style.cursor = 'pointer';
+    }
+
+    // URL load
+    window.loadChImgFromUrl = function() {
+      const url = document.getElementById('chImgUrl')?.value.trim();
+      if (!url) return;
+      const isPng = url.toLowerCase().includes('.png') || url.toLowerCase().includes('png');
+      window._chImgData = { dataUrl: url, isPng, isUrl: true };
+      preview.innerHTML = `<img src="${url}" style="max-height:70px;max-width:110px;border-radius:6px;object-fit:contain;" onerror="this.parentElement.innerHTML='❌ No se pudo cargar'">`;
+      dropZone.style.borderColor = 'var(--accent)';
+      enableApply();
+    };
+
+    dropZone.addEventListener('click', () => fileInput.click());
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.style.borderColor = 'var(--accent)'; });
+    dropZone.addEventListener('dragleave', () => { dropZone.style.borderColor = 'var(--border2)'; });
+    dropZone.addEventListener('drop', e => {
+      e.preventDefault(); dropZone.style.borderColor = 'var(--border2)';
+      if (e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]);
+    });
+    fileInput.addEventListener('change', () => { if (fileInput.files[0]) processFile(fileInput.files[0]); });
+
+    function processFile(file) {
+      const isPng = file.type === 'image/png';
+      const reader = new FileReader();
+      reader.onload = ev => {
+        window._chImgData = { dataUrl: ev.target.result, isPng };
+        preview.innerHTML = `<img src="${ev.target.result}" style="max-height:70px;max-width:110px;border-radius:6px;object-fit:contain;">`;
+        dropZone.style.borderColor = 'var(--accent)';
+        enableApply();
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  window.deleteChannelImg = function(idx, isCustom, customIdx) {
+    document.getElementById('chImgModal')?.remove();
+    if (isCustom) {
+      const chs = getCustomChannels();
+      delete chs[customIdx].img;
+      delete chs[customIdx].imgIsPng;
+      saveCustomChannels(chs);
+    } else {
+      const overrides = JSON.parse(localStorage.getItem('movara_ch_overrides')||'{}');
+      delete overrides[idx];
+      localStorage.setItem('movara_ch_overrides', JSON.stringify(overrides));
+      delete DEFAULT_CHANNELS[idx].img;
+      delete DEFAULT_CHANNELS[idx].imgIsPng;
+    }
+    renderChannels();
+  };
+
+  window.applyChannelImg = function(idx, isCustom, customIdx) {
+    const imgData = window._chImgData;
+    const newBg = document.getElementById('chBgColor')?.value || null;
+    document.getElementById('chImgModal')?.remove();
+    window._chImgData = null;
+
+    if (isCustom) {
+      const chs = getCustomChannels();
+      if (imgData) { chs[customIdx].img = imgData.dataUrl; chs[customIdx].imgIsPng = imgData.isPng; }
+      if (newBg) chs[customIdx].bg = newBg;
+      saveCustomChannels(chs);
+    } else {
+      const overrides = JSON.parse(localStorage.getItem('movara_ch_overrides')||'{}');
+      if (!overrides[idx] || typeof overrides[idx] === 'string') overrides[idx] = {};
+      if (imgData) { overrides[idx].dataUrl = imgData.dataUrl; overrides[idx].isPng = imgData.isPng; }
+      if (newBg) { overrides[idx].bg = newBg; DEFAULT_CHANNELS[idx].bg = newBg; }
+      localStorage.setItem('movara_ch_overrides', JSON.stringify(overrides));
+      if (imgData) { DEFAULT_CHANNELS[idx].img = imgData.dataUrl; DEFAULT_CHANNELS[idx].imgIsPng = imgData.isPng; }
+    }
+    renderChannels();
+  };
+
+  window.removeCustomChannel = function(customIdx) {
+    removeChannel(null, true, customIdx);
+  };
+
+  window.removeChannel = function(idx, isCustom, customIdx) {
+    if (isCustom) {
+      const chs = getCustomChannels();
+      chs.splice(customIdx, 1);
+      saveCustomChannels(chs);
+    } else {
+      const deleted = JSON.parse(localStorage.getItem('movara_ch_deleted')||'[]');
+      if (!deleted.includes(idx)) { deleted.push(idx); localStorage.setItem('movara_ch_deleted', JSON.stringify(deleted)); }
+    }
+    renderChannels();
+  };
+
+  window.restoreDefaultChannels = function() {
+    localStorage.removeItem('movara_ch_deleted');
+    renderChannels();
+    showToast('↺ Canales default restaurados');
+  };
+
+  window.showAddChannelModal = function() {
+    const existing = document.getElementById('addChannelModal');
+    if (existing) existing.remove();
+    const modal = document.createElement('div');
+    modal.id = 'addChannelModal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;display:flex;align-items:center;justify-content:center;';
+    modal.innerHTML = `
+      <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:28px;width:360px;max-width:92vw;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--t1);margin-bottom:20px;">Agregar canal</div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <input id="addChName" placeholder="Nombre del canal" style="background:var(--bg3);border:1px solid var(--border2);border-radius:10px;color:var(--t1);padding:12px 14px;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;">
+          <input id="addChUrl" placeholder="URL de angulismo (transmision?c=...)" style="background:var(--bg3);border:1px solid var(--border2);border-radius:10px;color:var(--t1);padding:12px 14px;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;">
+          <input id="addChLogo" placeholder="URL del logo (opcional)" style="background:var(--bg3);border:1px solid var(--border2);border-radius:10px;color:var(--t1);padding:12px 14px;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;">
+          <div style="display:flex;gap:10px;margin-top:4px;">
+            <button onclick="document.getElementById('addChannelModal').remove()" style="flex:1;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;color:var(--t2);padding:11px;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;">Cancelar</button>
+            <button onclick="confirmAddChannel()" style="flex:1;background:var(--accent);border:none;border-radius:10px;color:#000;padding:11px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;">Agregar</button>
+          </div>
+        </div>
+      </div>`;
+    document.body.appendChild(modal);
+    modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+  };
+
+  window.confirmAddChannel = function() {
+    const name = document.getElementById('addChName')?.value.trim();
+    const url  = document.getElementById('addChUrl')?.value.trim();
+    const logo = document.getElementById('addChLogo')?.value.trim();
+    if (!name || !url) { alert('El nombre y la URL son obligatorios.'); return; }
+    const chs = getCustomChannels();
+    // Auto-detect bg color from common channel names
+    const bgMap = { espn:'#cc0000', fox:'#003580', tnt:'#0033a0', dsports:'#00529b', tyc:'#e30613', movistar:'#019df4', cnn:'#cc0000', disney:'#113ccf', nat:'#ffa500' };
+    const nameLow = name.toLowerCase();
+    let bg = '#1e293b';
+    for (const [key, color] of Object.entries(bgMap)) { if (nameLow.includes(key)) { bg = color; break; } }
+    chs.push({ name, url, logo: logo || '', bg });
+    saveCustomChannels(chs);
+    document.getElementById('addChannelModal')?.remove();
+    renderChannels();
+  };
+
+  container.innerHTML = `
+    <div class="home-section">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.06em;color:var(--t1);">📡 Canales en vivo</div>
+        <button onclick="restoreDefaultChannels()" style="margin-left:auto;background:none;border:1px solid var(--border2);color:var(--t3);border-radius:8px;padding:5px 12px;cursor:pointer;font-size:12px;font-family:'DM Sans',sans-serif;transition:all .13s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--t3)'">↺ Restaurar default</button>
+      </div>
+      <div class="channel-grid" id="channelGrid"></div>
+    </div>`;
+
+  renderChannels();
 }
 
 async function showHistorias() {

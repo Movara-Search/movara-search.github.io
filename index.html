@@ -5087,24 +5087,22 @@ function showCanales() {
 
   // Default channels list
   const DEFAULT_CHANNELS = [
-    // Deportes ESPN
-    { name:'ESPN 1',        url:'https://angulismotv-dnh.pages.dev/transmision?c=ESPN+1&o=0',       logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/ESPN_wordmark.svg/320px-ESPN_wordmark.svg.png',        bg:'#cc0000' },
-    { name:'ESPN 2',        url:'https://angulismotv-dnh.pages.dev/transmision?c=ESPN+2&o=0',       logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/ESPN_wordmark.svg/320px-ESPN_wordmark.svg.png',        bg:'#aa0000' },
-    { name:'ESPN 3',        url:'https://angulismotv-dnh.pages.dev/transmision?c=ESPN+3&o=0',       logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/ESPN_wordmark.svg/320px-ESPN_wordmark.svg.png',        bg:'#880000' },
-    { name:'ESPN Premium',  url:'https://angulismotv-dnh.pages.dev/transmision?c=ESPN+Premium&o=0', logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/ESPN_wordmark.svg/320px-ESPN_wordmark.svg.png',        bg:'#6b0000' },
-    // FOX Sports
-    { name:'FOX Sports',    url:'https://angulismotv-dnh.pages.dev/transmision?c=FOX+Sports&o=0',   logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Fox_Sports_logo_%282021%29.svg/320px-Fox_Sports_logo_%282021%29.svg.png',    bg:'#003580' },
-    { name:'FOX Sports 2',  url:'https://angulismotv-dnh.pages.dev/transmision?c=FOX+Sports+2&o=0', logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Fox_Sports_logo_%282021%29.svg/320px-Fox_Sports_logo_%282021%29.svg.png',    bg:'#002a66' },
-    { name:'FOX Sports 3',  url:'https://angulismotv-dnh.pages.dev/transmision?c=FOX+Sports+3&o=0', logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Fox_Sports_logo_%282021%29.svg/320px-Fox_Sports_logo_%282021%29.svg.png',    bg:'#001f4d' },
-    // TNT / DSports / TyC / Movistar
-    { name:'TNT Sports',    url:'https://angulismotv-dnh.pages.dev/transmision?c=TNT+Sports&o=0',   logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/TNT_Sports_logo.svg/320px-TNT_Sports_logo.svg.png',   bg:'#0033a0' },
-    { name:'DSports',       url:'https://angulismotv-dnh.pages.dev/transmision?c=DSports&o=0',      logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/DSports_logo.svg/320px-DSports_logo.svg.png',         bg:'#00529b' },
-    { name:'DSports 2',     url:'https://angulismotv-dnh.pages.dev/transmision?c=DSports+2&o=0',    logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/DSports_logo.svg/320px-DSports_logo.svg.png',         bg:'#003f78' },
-    { name:'TyC Sports',    url:'https://angulismotv-dnh.pages.dev/transmision?c=TyC+Sports&o=0',   logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/TyC_Sports_logo.svg/320px-TyC_Sports_logo.svg.png',   bg:'#e30613' },
-    { name:'Movistar',      url:'https://angulismotv-dnh.pages.dev/transmision?c=MOVISTAR&o=0',     logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Movistar_isotype.svg/200px-Movistar_isotype.svg.png',  bg:'#019df4' },
+    { name:'DSports',       url:'https://angulismotv-dnh.pages.dev/transmision?c=DSports&o=0',       img:'https://raw.githubusercontent.com/Movara-Search/movara-search.github.io/main/logos/DSports.png',       imgIsPng:true, bg:'#00529b' },
+    { name:'DSports 2',     url:'https://angulismotv-dnh.pages.dev/transmision?c=DSports+2&o=0',     img:'https://raw.githubusercontent.com/Movara-Search/movara-search.github.io/main/logos/DSports%202.png',   imgIsPng:true, bg:'#003f78' },
+    { name:'DSports+',      url:'https://angulismotv-dnh.pages.dev/transmision?c=DSports+Plus&o=0',  img:'https://raw.githubusercontent.com/Movara-Search/movara-search.github.io/main/logos/DSports%2B.png',    imgIsPng:true, bg:'#002d5c' },
+    { name:'ESPN',          url:'https://angulismotv-dnh.pages.dev/transmision?c=ESPN+1&o=0',        img:'https://raw.githubusercontent.com/Movara-Search/movara-search.github.io/main/logos/ESPN%201.png',      imgIsPng:true, bg:'#cc0000' },
+    { name:'ESPN 2',        url:'https://angulismotv-dnh.pages.dev/transmision?c=ESPN+2&o=0',        img:'https://raw.githubusercontent.com/Movara-Search/movara-search.github.io/main/logos/ESPN%202.png',      imgIsPng:true, bg:'#aa0000' },
+    { name:'ESPN 3',        url:'https://angulismotv-dnh.pages.dev/transmision?c=ESPN+3&o=0',        img:'https://raw.githubusercontent.com/Movara-Search/movara-search.github.io/main/logos/ESPN%203.png',      imgIsPng:true, bg:'#880000' },
+    { name:'ESPN Premium',  url:'https://angulismotv-dnh.pages.dev/transmision?c=ESPN+Premium&o=0',  img:'https://raw.githubusercontent.com/Movara-Search/movara-search.github.io/main/logos/ESPN%20Premium.png',imgIsPng:true, bg:'#6b0000' },
+    { name:'FOX Sports',    url:'https://angulismotv-dnh.pages.dev/transmision?c=FOX+Sports&o=0',    img:'https://raw.githubusercontent.com/Movara-Search/movara-search.github.io/main/logos/FOX%20Sports.png',  imgIsPng:true, bg:'#003580' },
+    { name:'FOX Sports 2',  url:'https://angulismotv-dnh.pages.dev/transmision?c=FOX+Sports+2&o=0',  img:'https://raw.githubusercontent.com/Movara-Search/movara-search.github.io/main/logos/FOX%20Sports%202.png', imgIsPng:true, bg:'#002a66' },
+    { name:'FOX Sports 3',  url:'https://angulismotv-dnh.pages.dev/transmision?c=FOX+Sports+3&o=0',  img:'https://raw.githubusercontent.com/Movara-Search/movara-search.github.io/main/logos/FOX%20Sports%203.png', imgIsPng:true, bg:'#001f4d' },
+    { name:'Movistar',      url:'https://angulismotv-dnh.pages.dev/transmision?c=MOVISTAR&o=0',      img:'https://raw.githubusercontent.com/Movara-Search/movara-search.github.io/main/logos/Movistar.png',      imgIsPng:true, bg:'#019df4' },
+    { name:'TNT Sports',    url:'https://angulismotv-dnh.pages.dev/transmision?c=TNT+Sports&o=0',    img:'https://raw.githubusercontent.com/Movara-Search/movara-search.github.io/main/logos/TNT%20Sports.png',  imgIsPng:true, bg:'#0033a0' },
+    { name:'TyC Sports',    url:'https://angulismotv-dnh.pages.dev/transmision?c=TyC+Sports&o=0',    img:'https://raw.githubusercontent.com/Movara-Search/movara-search.github.io/main/logos/TyC%20Sports.png',  imgIsPng:true, bg:'#e30613' },
   ];
 
-  // Load custom channels from localStorage
+  // Load custom channels from localStorage from localStorage
   function getCustomChannels() {
     try { return JSON.parse(localStorage.getItem('movara_channels') || '[]'); } catch(e) { return []; }
   }
@@ -5131,6 +5129,20 @@ function showCanales() {
     return null;
   }
 
+  let _chSorted = true; // default alphabetical
+
+  window.toggleChannelSort = function() {
+    _chSorted = !_chSorted;
+    const btn = document.getElementById('chSortBtn');
+    if (btn) {
+      btn.style.background = _chSorted ? 'var(--acc-lo)' : 'var(--bg3)';
+      btn.style.borderColor = _chSorted ? 'var(--accent)' : 'var(--border2)';
+      btn.style.color = _chSorted ? 'var(--accent)' : 'var(--t2)';
+      btn.querySelector('svg + *') && (btn.lastChild.textContent = _chSorted ? 'A→Z' : 'Manual');
+    }
+    renderChannels();
+  };
+
   function renderChannels() {
     const customChs = getCustomChannels();
     const deletedDefaults = new Set(JSON.parse(localStorage.getItem('movara_ch_deleted')||'[]'));
@@ -5140,10 +5152,17 @@ function showCanales() {
     grid.innerHTML = '';
 
     const filteredDefaults = DEFAULT_CHANNELS.map((ch,i) => ({...ch, _origIdx:i})).filter((_,i) => !deletedDefaults.has(i));
-    const allChsWithIdx = [...filteredDefaults, ...customChs.map(ch => ({...ch, _origIdx:-1}))];
+    const allChsWithIdx = [...filteredDefaults, ...customChs.map(ch => ({...ch, _origIdx:-1}))]
+      .sort((a,b) => _chSortAZ
+        ? a.name.localeCompare(b.name, 'es', {sensitivity:'base'})
+        : b.name.localeCompare(a.name, 'es', {sensitivity:'base'}));
+    // Build a map of custom channel original indices for removal
+    let _customCounter = 0;
+    allChsWithIdx.forEach(ch => { if (ch._origIdx === -1) ch._customIdx = _customCounter++; });
+
     allChsWithIdx.forEach((ch, idx) => {
-      const isCustom = idx >= filteredDefaults.length;
-      const customIdx = idx - filteredDefaults.length;
+      const isCustom = ch._origIdx === -1;
+      const customIdx = isCustom ? ch._customIdx : -1;
       const origIdx = ch._origIdx;
       const card = document.createElement('a');
       card.className = 'channel-card';
@@ -5376,6 +5395,17 @@ function showCanales() {
     showToast('↺ Canales default restaurados');
   };
 
+  let _chSortAZ = true;
+  window.toggleChannelSort = function() {
+    _chSortAZ = !_chSortAZ;
+    const label = document.getElementById('chSortLabel');
+    const btn = document.getElementById('chSortBtn');
+    if (label) label.textContent = _chSortAZ ? 'A–Z' : 'Z–A';
+    if (btn) btn.style.borderColor = _chSortAZ ? 'var(--accent)' : 'var(--border2)';
+    if (btn) btn.style.color = _chSortAZ ? 'var(--accent)' : 'var(--t2)';
+    renderChannels();
+  };
+
   window.showAddChannelModal = function() {
     const existing = document.getElementById('addChannelModal');
     if (existing) existing.remove();
@@ -5418,13 +5448,24 @@ function showCanales() {
 
   container.innerHTML = `
     <div class="home-section">
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap;">
         <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.06em;color:var(--t1);">📡 Canales en vivo</div>
-        <button onclick="restoreDefaultChannels()" style="margin-left:auto;background:none;border:1px solid var(--border2);color:var(--t3);border-radius:8px;padding:5px 12px;cursor:pointer;font-size:12px;font-family:'DM Sans',sans-serif;transition:all .13s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--t3)'">↺ Restaurar default</button>
+        <button id="chSortBtn" onclick="toggleChannelSort()" style="background:var(--bg3);border:1px solid var(--border2);color:var(--t2);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:12px;font-family:'DM Sans',sans-serif;transition:all .13s;display:flex;align-items:center;gap:5px;">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="14" y2="12"/><line x1="4" y1="18" x2="9" y2="18"/></svg>
+          <span id="chSortLabel">A–Z</span>
+        </button>
+        <button onclick="restoreDefaultChannels()" style="background:none;border:1px solid var(--border2);color:var(--t3);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:12px;font-family:'DM Sans',sans-serif;transition:all .13s;margin-left:auto;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--t3)'">↺ Restaurar default</button>
       </div>
       <div class="channel-grid" id="channelGrid"></div>
     </div>`;
 
+  // Set initial sort btn style
+  const _initSortBtn = document.getElementById('chSortBtn');
+  if (_initSortBtn) {
+    _initSortBtn.style.background = 'var(--acc-lo)';
+    _initSortBtn.style.borderColor = 'var(--accent)';
+    _initSortBtn.style.color = 'var(--accent)';
+  }
   renderChannels();
 }
 

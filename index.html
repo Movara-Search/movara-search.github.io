@@ -522,7 +522,11 @@ body {
 .cat-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  max-width: 100%;
   gap: 10px; margin-top: 4px;
+}
+.browse-grid {
+  max-width: 100%;
 }
 .cat-card {
   border-radius: 12px; padding: 20px 14px;
@@ -3915,6 +3919,9 @@ async function showHome(pushNav = true) {
 // ── setHomeType ──────────────────────────────────────────
 function setHomeType(type) {
   homeType = type;
+  // Reset any container width pollution from cat-grid
+  const container = document.getElementById('container');
+  if (container) container.style.minWidth = '';
   ['tabMovie','tabTv','tabCategories','tabCanales'].forEach(id => {
     document.getElementById(id)?.classList.remove('active');
   });
@@ -3957,10 +3964,13 @@ function toggleHomeSort() {
 async function loadHomeGrid(append = false) {
   const grid = document.getElementById('browseGrid');
   if (!grid) return;
+  // Always reset to browse-grid class (categories changes it to cat-grid)
+  if (homeType !== 'categories') grid.className = 'browse-grid';
   if (!append) { grid.innerHTML = '<div class="ep-loading">Cargando…</div>'; homePage = 1; }
   try {
     if (homeType === 'categories') {
       grid.innerHTML = '';
+      grid.className = 'cat-grid';
       renderCategoriesGrid(grid);
       return;
     }
@@ -4341,9 +4351,20 @@ function pushHistory(entry) {
   if (last && JSON.stringify(last) === JSON.stringify(entry)) return;
   navHistory.push(entry);
   document.getElementById('backBtn').style.display = navHistory.length > 1 ? 'inline-flex' : 'none';
+  // Update URL hash for F5 restore and mouse back/forward
+  if (entry.type === 'detail' && entry.item) {
+    const mt = entry.item.media_type || entry.item._mt || 'movie';
+    window.history.pushState(entry, '', `#${mt}/${entry.item.id}`);
+  } else if (entry.type === 'home') {
+    window.history.pushState(entry, '', '#');
+  }
 }
 
 function goBack() {
+  if (window.history.length > 1) {
+    window.history.back();
+    return;
+  }
   navHistory.pop();
   const prev = navHistory[navHistory.length - 1];
   if (!prev) {
@@ -4378,6 +4399,36 @@ document.addEventListener('click', e => {
 
 // Show home on load
 initAutocomplete();
+
+// Handle browser back/forward buttons
+window.addEventListener('popstate', (e) => {
+  const hash = window.location.hash;
+  if (!hash || hash === '#') {
+    showHome(false);
+  } else {
+    const match = hash.match(/^#(movie|tv)\/(\d+)$/);
+    if (match) {
+      const mt = match[1];
+      const id = parseInt(match[2]);
+      openDetail({ id, media_type: mt });
+    }
+  }
+});
+
+// Restore from hash on F5 reload
+(function restoreFromHash() {
+  const hash = window.location.hash;
+  if (hash && hash !== '#') {
+    const match = hash.match(/^#(movie|tv)\/(\d+)$/);
+    if (match) {
+      const mt = match[1];
+      const id = parseInt(match[2]);
+      // Show home first then open detail
+      openDetail({ id, media_type: mt });
+      return;
+    }
+  }
+})();
 
 // Scroll-to-top button
 (function() {

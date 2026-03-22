@@ -5184,6 +5184,7 @@ function showCanales() {
     } else if (ov) {
       if (ov.dataUrl) { ch.img = ov.dataUrl; ch.imgIsPng = ov.isPng; }
       if (ov.bg) ch.bg = ov.bg;
+      if (ov.url) ch.url = ov.url;
     }
   });
 
@@ -5443,9 +5444,9 @@ function showCanales() {
       if (!overrides[chName] || typeof overrides[chName] === 'string') overrides[chName] = {};
       if (imgData) { overrides[chName].dataUrl = imgData.dataUrl; overrides[chName].isPng = imgData.isPng; }
       if (newBg) { overrides[chName].bg = newBg; DEFAULT_CHANNELS[idx].bg = newBg; }
+      if (newLink) { overrides[chName].url = newLink; DEFAULT_CHANNELS[idx].url = newLink; }
       localStorage.setItem('movara_ch_overrides', JSON.stringify(overrides));
       if (imgData) { DEFAULT_CHANNELS[idx].img = imgData.dataUrl; DEFAULT_CHANNELS[idx].imgIsPng = imgData.isPng; }
-      if (newLink) { overrides[chName].url = newLink; DEFAULT_CHANNELS[idx].url = newLink; }
     }
     renderChannels();
   };

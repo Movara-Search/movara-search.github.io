@@ -1629,12 +1629,12 @@ const DEFAULT_PLATFORMS = [
   { name:"Paramount+",   domain:"paramountplus.com",  url:"https://www.paramountplus.com/search/{q}/",                unofficial:false },
   { name:"Crunchyroll",  domain:"crunchyroll.com",   url:"https://www.crunchyroll.com/search?q={q}",                unofficial:false },
   { name:"PelisFlix",    domain:"pelisflix1.homes",  url:"https://pelisflix1.homes/?s={q}",                           unofficial:true  },
-  { name:"Cuevana",      domain:"https://cuevana3l.biz/",        url:"https://cuevana3l.biz//explorar?s={q}",                                 unofficial:true  },
+  { name:"Cuevana",      domain:"cuevana3l.biz",     url:"https://cuevana3l.biz/explorar?s={q}",                       unofficial:true  },
   { name:"HDFull",       domain:"hdfull.org",        url:"https://hdfull.org/{type}/{slug}",                         unofficial:true  },
   { name:"PelisPlusHD",  domain:"pelisplushd.ms",    url:"https://www.pelisplushd.ms/search?s={q}",                   unofficial:true  },
   { name:"SeriesFlixHD", domain:"seriesflixhd.shop", url:"https://seriesflixhd.shop/?s={q}",                          unofficial:true  },
   { name:"PelisPedia",   domain:"pelispedia.mov",    url:"https://pelispedia.mov/search?s={q_es}",                    unofficial:true  },
-  { name:"LA Movie",     domain:"la.movie",          url:"https://la.movie/?s={q}",                                  unofficial:true  },
+  { name:"LA Movie",     domain:"lamovie.org",       url:"https://lamovie.org/?s={q}",                                  unofficial:true  },
 ];
 
 // JustWatch provider IDs → domain mapping (AR catalogue)
@@ -1650,7 +1650,7 @@ const JW_PROVIDERS = {
 // PLATFORMS STATE
 // ═══════════════════════════════════════════════
 const REMOVED_DOMAINS = new Set(['cuevana.is','cuevana3.io','pelismas.net','pelisflix1.wiki','gnula.nu']);
-const PLATFORMS_VERSION = 10;
+const PLATFORMS_VERSION = 11;
 function loadPlatforms() {
   try {
     const ver = parseInt(localStorage.getItem('platforms_version') || '0');
@@ -2000,7 +2000,7 @@ async function playEpisodeRow(e, row, seasonNum, epNum, episodes, histMode) {
   const seriesSlug = (currentDetailOriginal || currentDetailTitle || '').toLowerCase()
     .normalize('NFD').replace(/[̀-ͯ]/g,'')
     .replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-  const cuevanaUrl    = `https://cuevana.bi/serie/${seriesSlug}/episodio-${seasonNum}x${epNum}`;
+  const cuevanaUrl    = `https://cuevana3l.biz/serie/${seriesSlug}/episodio-${seasonNum}x${epNum}`;
   const pelisflixUrl  = `https://pelisflix1.homes/episodio/${seriesSlug}-${seasonNum}x${epNum}/`;
   const hdfullUrl     = `https://hdfull.org/serie/${seriesSlug}/temporada-${seasonNum}/episodio-${epNum}`;
   const pelisplushUrl = `https://www.pelisplushd.ms/serie/${seriesSlug}/temporada/${seasonNum}/capitulo/${epNum}`;
@@ -2177,13 +2177,13 @@ async function toggleSeason(tvId, seasonNum, clickedCard, histMode) {
       .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
       .replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-');
     // Check if Cuevana is in platforms
-    const cuevanaPlat = platforms.find(p => p.domain === 'cuevana.bi');
+    const cuevanaPlat = platforms.find(p => p.domain === 'cuevana3l.biz');
 
     episodes.forEach(ep => {
       const row = document.createElement('div');
       row.className = 'episode-row';
       row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:8px;';
-      const cuevanaUrl = `https://cuevana.bi/serie/${seriesSlug}/episodio-${seasonNum}x${ep.episode_number}`;
+      const cuevanaUrl = `https://cuevana3l.biz/serie/${seriesSlug}/episodio-${seasonNum}x${ep.episode_number}`;
       const pelisflixUrl  = `https://pelisflix1.homes/episodio/${seriesSlug}-${seasonNum}x${ep.episode_number}/`;
       const hdfullUrl     = `https://hdfull.org/serie/${seriesSlug}/temporada-${seasonNum}/episodio-${ep.episode_number}`;
       const pelisplushUrl = `https://www.pelisplushd.ms/serie/${seriesSlug}/temporada/${seasonNum}/capitulo/${ep.episode_number}`;
@@ -3101,7 +3101,7 @@ function toggleStreamingMenu(e) {
 function openLaMovieSeries() {
   const searchTitle = currentDetailOriginal || currentDetailTitle || '';
   const q = encodeURIComponent(searchTitle);
-  window.open(`https://la.movie/?s=${q}`, '_blank');
+  window.open(`https://lamovie.org/?s=${q}`, '_blank');
 }
 function renderResultPlatforms(title) {
   const container = document.getElementById('resultPlatforms');
@@ -3123,7 +3123,7 @@ function renderResultPlatforms(title) {
   const slug_year = currentDetailYear ? `${slugOriginal}-${currentDetailYear}` : slugOriginal;
 
   const legalDomains = new Set(['netflix.com','primevideo.com','disneyplus.com','max.com','tv.apple.com','paramountplus.com','starplus.com','movistarplus.es','clarovideo.com','crunchyroll.com']);
-  const unofficialDomains = new Set(['pelisflix1.homes','cuevana.bi','hdfull.org','pelisplushd.ms','pelispedia.mov','seriesflixhd.shop','la.movie']);
+  const unofficialDomains = new Set(['pelisflix1.homes','cuevana3l.biz','hdfull.org','pelisplushd.ms','pelispedia.mov','seriesflixhd.shop','lamovie.org']);
   const legalPlatforms = platforms.filter(p => legalDomains.has(p.domain));
   const unofficialPlatforms = platforms.filter(p => unofficialDomains.has(p.domain));
 

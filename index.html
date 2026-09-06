@@ -1635,6 +1635,7 @@ const DEFAULT_PLATFORMS = [
   { name:"SeriesFlixHD", domain:"seriesflixhd.shop", url:"https://seriesflixhd.shop/?s={q}",                          unofficial:true  },
   { name:"PelisPedia",   domain:"pelispedia.mov",    url:"https://pelispedia.mov/search?s={q_es}",                    unofficial:true  },
   { name:"LA Movie",     domain:"lamovie.org",       url:"https://lamovie.org/?s={q}",                                  unofficial:true  },
+  { name:"PoseidonHD2",  domain:"poseidonhd2.co", url:"https://www.poseidonhd2.co/search?q={q}",                 unofficial:true  },
 ];
 
 // JustWatch provider IDs → domain mapping (AR catalogue)
@@ -1965,12 +1966,14 @@ function renderEpPlatformSelector() {
   const hdfull     = platforms.find(p => p.domain === 'hdfull.org');
   const pelisplushd= platforms.find(p => p.domain === 'pelisplushd.ms');
   const pelispedia = platforms.find(p => p.domain === 'pelispedia.mov');
+  const poseidon   = platforms.find(p => p.domain === 'poseidonhd2.co');
   const opts = [];
   if (cuevana)    opts.push({ key: 'cuevana',    label: 'Cuevana',      color: '#e8c547' });
   if (pelisflix)  opts.push({ key: 'pelisflix',  label: 'PelisFlix',    color: '#3b82f6' });
   if (hdfull)     opts.push({ key: 'hdfull',     label: 'HDFull ↗',    color: '#10b981' });
   if (pelisplushd)opts.push({ key: 'pelisplushd',label: 'PelisPlusHD',  color: '#f97316' });
   if (pelispedia) opts.push({ key: 'pelispedia', label: 'PelisPedia ↗', color: '#a855f7' });
+  if (poseidon)   opts.push({ key: 'poseidon',   label: 'PoseidonHD2 ↗', color: '#06b6d4' });
   if (!opts.length) { sel.style.display = 'none'; return; }
   sel.innerHTML = '<span style="font-size:11px;color:var(--t3);font-family:DM Mono,monospace;align-self:center;">VER EN:</span>';
   opts.forEach(opt => {
@@ -1996,7 +1999,7 @@ let currentTvId = null;
 
 async function playEpisodeRow(e, row, seasonNum, epNum, episodes, histMode) {
   if (histMode) return;
-  const noEmbedPlatforms = new Set(['hdfull', 'pelispedia']);
+  const noEmbedPlatforms = new Set(['hdfull', 'pelispedia', 'poseidon']);
   const seriesSlug = (currentDetailOriginal || currentDetailTitle || '').toLowerCase()
     .normalize('NFD').replace(/[̀-ͯ]/g,'')
     .replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
@@ -2005,8 +2008,12 @@ async function playEpisodeRow(e, row, seasonNum, epNum, episodes, histMode) {
   const hdfullUrl     = `https://hdfull.org/serie/${seriesSlug}/temporada-${seasonNum}/episodio-${epNum}`;
   const pelisplushUrl = `https://www.pelisplushd.ms/serie/${seriesSlug}/temporada/${seasonNum}/capitulo/${epNum}`;
   const pelispediaUrl = `https://pelispedia.mov/search?s=${encodeURIComponent(currentDetailTitle||'')}`;
+  const poseidonSlug = (currentDetailOriginal || currentDetailTitle || '').toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-');
+  const poseidonUrl = `https://www.poseidonhd2.co/serie/${currentDetailId}/${poseidonSlug}/temporada/${seasonNum}/episodio/${epNum}`;
   if (activePlatform && activePlatform !== 'vimeus') {
-    const urls = { cuevana: cuevanaUrl, pelisflix: pelisflixUrl, hdfull: hdfullUrl, pelisplushd: pelisplushUrl, pelispedia: pelispediaUrl };
+    const urls = { cuevana: cuevanaUrl, pelisflix: pelisflixUrl, hdfull: hdfullUrl, pelisplushd: pelisplushUrl, pelispedia: pelispediaUrl, poseidon: poseidonUrl };
     const url = urls[activePlatform];
     if (url) {
       if (noEmbedPlatforms.has(activePlatform)) window.open(url, '_blank');
@@ -2187,6 +2194,10 @@ async function toggleSeason(tvId, seasonNum, clickedCard, histMode) {
       const pelisflixUrl  = `https://pelisflix1.homes/episodio/${seriesSlug}-${seasonNum}x${ep.episode_number}/`;
       const hdfullUrl     = `https://hdfull.org/serie/${seriesSlug}/temporada-${seasonNum}/episodio-${ep.episode_number}`;
       const pelisplushUrl = `https://www.pelisplushd.ms/serie/${seriesSlug}/temporada/${seasonNum}/capitulo/${ep.episode_number}`;
+      const poseidonSlug = (currentDetailOriginal || currentDetailTitle || '').toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-');
+      const poseidonUrl = `https://www.poseidonhd2.co/serie/${currentDetailId}/${poseidonSlug}/temporada/${seasonNum}/episodio/${ep.episode_number}`;
       const epNum = ep.episode_number;
       const epName = ep.name || 'Episodio ' + epNum;
       const epOverview = ep.overview || '';
@@ -2201,7 +2212,7 @@ async function toggleSeason(tvId, seasonNum, clickedCard, histMode) {
       const playBtnHtml = histMode ? '' : `<button class="ep-play-btn ready"
         data-cuevana="${cuevanaUrl}" data-pelisflix="${pelisflixUrl}"
         data-hdfull="${hdfullUrl}" data-pelisplushd="${pelisplushUrl}"
-        data-pelispedia="${pelispediaUrl}"
+        data-pelispedia="${pelispediaUrl}" data-poseidon="${poseidonUrl}"
         title="Reproducir con Vimeus">▶</button>`;
       // Eye: only shown in normal mode (not historial), only clickeable to UNWATCH (not to watch manually)
       const eyeHtml = histMode
@@ -2222,7 +2233,7 @@ async function toggleSeason(tvId, seasonNum, clickedCard, histMode) {
         </div>`;
 
       if (!histMode) {
-        const noEmbedPlatforms = new Set(['hdfull', 'pelispedia']);
+        const noEmbedPlatforms = new Set(['hdfull', 'pelispedia', 'poseidon']);
 
         // Click en toda la fila (para TV y móvil)
         row.style.cursor = 'pointer';
@@ -2242,6 +2253,7 @@ async function toggleSeason(tvId, seasonNum, clickedCard, histMode) {
               hdfull:     e.currentTarget.dataset.hdfull,
               pelisplushd:e.currentTarget.dataset.pelisplushd,
               pelispedia: e.currentTarget.dataset.pelispedia,
+              poseidon:   e.currentTarget.dataset.poseidon,
             };
             const url = urls[activePlatform];
             if (url) {
@@ -3123,7 +3135,7 @@ function renderResultPlatforms(title) {
   const slug_year = currentDetailYear ? `${slugOriginal}-${currentDetailYear}` : slugOriginal;
 
   const legalDomains = new Set(['netflix.com','primevideo.com','disneyplus.com','max.com','tv.apple.com','paramountplus.com','starplus.com','movistarplus.es','clarovideo.com','crunchyroll.com']);
-  const unofficialDomains = new Set(['pelisflix1.homes','cuevana3l.biz','hdfull.org','pelisplushd.ms','pelispedia.mov','seriesflixhd.shop','lamovie.org']);
+  const unofficialDomains = new Set(['pelisflix1.homes','cuevana3l.biz','hdfull.org','pelisplushd.ms','pelispedia.mov','seriesflixhd.shop','lamovie.org','poseidonhd2.co']);
   const legalPlatforms = platforms.filter(p => legalDomains.has(p.domain));
   const unofficialPlatforms = platforms.filter(p => unofficialDomains.has(p.domain));
 

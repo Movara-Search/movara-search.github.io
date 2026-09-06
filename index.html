@@ -1631,7 +1631,7 @@ const DEFAULT_PLATFORMS = [
   { name:"PelisFlix",    domain:"pelisflix1.homes",  url:"https://pelisflix1.homes/?s={q}",                           unofficial:true  },
   { name:"Cuevana",      domain:"cuevana3l.biz",     url:"https://cuevana3l.biz/explorar?s={q}",                       unofficial:true  },
   { name:"HDFull",       domain:"hdfull.org",        url:"https://hdfull.org/{type}/{slug}",                         unofficial:true  },
-  { name:"PelisPlusHD",  domain:"pelisplushd.ms",    url:"https://www.pelisplushd.ms/search?s={q}",                   unofficial:true  },
+  { name:"PelisPlusHD",  domain:"pelispluss.website", url:"https://pelispluss.website/?s={q}",                   unofficial:true  },
   { name:"SeriesFlixHD", domain:"seriesflixhd.shop", url:"https://seriesflixhd.shop/?s={q}",                          unofficial:true  },
   { name:"PelisPedia",   domain:"pelispedia.mov",    url:"https://pelispedia.mov/search?s={q_es}",                    unofficial:true  },
   { name:"LA Movie",     domain:"lamovie.org",       url:"https://lamovie.org/?s={q}",                                  unofficial:true  },
@@ -1650,7 +1650,7 @@ const JW_PROVIDERS = {
 // ═══════════════════════════════════════════════
 // PLATFORMS STATE
 // ═══════════════════════════════════════════════
-const REMOVED_DOMAINS = new Set(['cuevana.is','cuevana3.io','pelismas.net','pelisflix1.wiki','gnula.nu']);
+const REMOVED_DOMAINS = new Set(['cuevana.is','cuevana3.io','pelismas.net','pelisflix1.wiki','gnula.nu','pelisplushd.ms']);
 const PLATFORMS_VERSION = 11;
 function loadPlatforms() {
   try {
@@ -1964,7 +1964,7 @@ function renderEpPlatformSelector() {
   const cuevana    = platforms.find(p => p.domain === 'cuevana3l.biz');
   const pelisflix  = platforms.find(p => p.domain === 'pelisflix1.homes');
   const hdfull     = platforms.find(p => p.domain === 'hdfull.org');
-  const pelisplushd= platforms.find(p => p.domain === 'pelisplushd.ms');
+  const pelisplushd= platforms.find(p => p.domain === 'pelispluss.website');
   const pelispedia = platforms.find(p => p.domain === 'pelispedia.mov');
   const poseidon   = platforms.find(p => p.domain === 'poseidonhd2.co');
   const opts = [];
@@ -2006,7 +2006,7 @@ async function playEpisodeRow(e, row, seasonNum, epNum, episodes, histMode) {
   const cuevanaUrl    = `https://cuevana3l.biz/serie/${seriesSlug}/episodio-${seasonNum}x${epNum}`;
   const pelisflixUrl  = `https://pelisflix1.homes/episodio/${seriesSlug}-${seasonNum}x${epNum}/`;
   const hdfullUrl     = `https://hdfull.org/serie/${seriesSlug}/temporada-${seasonNum}/episodio-${epNum}`;
-  const pelisplushUrl = `https://www.pelisplushd.ms/serie/${seriesSlug}/temporada/${seasonNum}/capitulo/${epNum}`;
+  const pelisplushUrl = `https://pelispluss.website/serie/${currentDetailId}-${seasonNum}-${epNum}/${seriesSlug}/`;
   const pelispediaUrl = `https://pelispedia.mov/search?s=${encodeURIComponent(currentDetailTitle||'')}`;
   const poseidonSlug = (currentDetailOriginal || currentDetailTitle || '').toLowerCase()
     .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
@@ -2193,7 +2193,7 @@ async function toggleSeason(tvId, seasonNum, clickedCard, histMode) {
       const cuevanaUrl = `https://cuevana3l.biz/serie/${seriesSlug}/episodio-${seasonNum}x${ep.episode_number}`;
       const pelisflixUrl  = `https://pelisflix1.homes/episodio/${seriesSlug}-${seasonNum}x${ep.episode_number}/`;
       const hdfullUrl     = `https://hdfull.org/serie/${seriesSlug}/temporada-${seasonNum}/episodio-${ep.episode_number}`;
-      const pelisplushUrl = `https://www.pelisplushd.ms/serie/${seriesSlug}/temporada/${seasonNum}/capitulo/${ep.episode_number}`;
+      const pelisplushUrl = `https://pelispluss.website/serie/${currentDetailId}-${seasonNum}-${ep.episode_number}/${seriesSlug}/`;
       const poseidonSlug = (currentDetailOriginal || currentDetailTitle || '').toLowerCase()
         .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
         .replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-');
@@ -3135,17 +3135,19 @@ function renderResultPlatforms(title) {
   const slug_year = currentDetailYear ? `${slugOriginal}-${currentDetailYear}` : slugOriginal;
 
   const legalDomains = new Set(['netflix.com','primevideo.com','disneyplus.com','max.com','tv.apple.com','paramountplus.com','starplus.com','movistarplus.es','clarovideo.com','crunchyroll.com']);
-  const unofficialDomains = new Set(['pelisflix1.homes','cuevana3l.biz','hdfull.org','pelisplushd.ms','pelispedia.mov','seriesflixhd.shop','lamovie.org','poseidonhd2.co']);
+  const unofficialDomains = new Set(['pelisflix1.homes','cuevana3l.biz','hdfull.org','pelispluss.website','pelispedia.mov','seriesflixhd.shop','lamovie.org','poseidonhd2.co']);
   const legalPlatforms = platforms.filter(p => legalDomains.has(p.domain));
   const unofficialPlatforms = platforms.filter(p => unofficialDomains.has(p.domain));
 
   const faviconOverrides = {
     'pelisflix1.homes': 'https://s.pelisflix1.homes/flix/imgs/cropped-1F17F-p-button-128-32x32.png',
-    'pelisplushd.ms':   'https://image.winudf.com/v2/image1/cGVsaXNwbHVzLmFwbGlrZnRfaWNvbl8xNjQyOTc5Mjg3XzA1Nw/icon.webp?w=140&fakeurl=1&type=.webp',
+    'pelispluss.website':   'https://www.google.com/s2/favicons?sz=64&domain=pelispluss.website',
   };
 
   container.innerHTML = legalPlatforms.map(p => {
-    const url = p.url.replace('{q}', q).replace('{q_es}', q_es).replace('{slug}', slug).replace('{type}', type).replace('{type_la}', type_la).replace('{slug_year}', slug_year);
+    const url = p.domain === 'cuevana3l.biz'
+      ? `https://cuevana3l.biz/explorar?s=${q}`
+      : p.url.replace('{q}', q).replace('{q_es}', q_es).replace('{slug}', slug).replace('{type}', type).replace('{type_la}', type_la).replace('{slug_year}', slug_year);
     const fav = faviconOverrides[p.domain] || `https://www.google.com/s2/favicons?sz=64&domain=${p.domain}`;
     return `<a class="rp-btn" href="${url}" target="_blank" title="${p.name}">
       <img src="${fav}" alt="${p.name}">
@@ -3163,7 +3165,9 @@ function renderResultPlatforms(title) {
   </div>`;
 
   const pirateItems = unofficialPlatforms.map(p => {
-    const url = p.url.replace('{q}', q).replace('{q_es}', q_es).replace('{slug}', slug).replace('{type}', type).replace('{type_la}', type_la).replace('{slug_year}', slug_year);
+    const url = p.domain === 'cuevana3l.biz'
+      ? `https://cuevana3l.biz/explorar?s=${q}`
+      : p.url.replace('{q}', q).replace('{q_es}', q_es).replace('{slug}', slug).replace('{type}', type).replace('{type_la}', type_la).replace('{slug_year}', slug_year);
     const fav = faviconOverrides[p.domain] || `https://www.google.com/s2/favicons?sz=64&domain=${p.domain}`;
     const action = `document.getElementById('pirateMenu').style.display='none';window.open('${url.replace(/'/g,"\\'")}','_blank')`;
     return `<button onclick="${action}" title="${p.name}"
